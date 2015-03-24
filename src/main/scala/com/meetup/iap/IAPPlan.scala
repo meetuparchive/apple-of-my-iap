@@ -11,7 +11,7 @@ object IAPPlan extends Plan {
   "status": 0,
   "receipt": {
     "item_id": "521129812",
-    "bid": "com.mindmobapp.MindMob",
+    "bid": "com.meetup.Meetup",
     "purchase_date_pst": "2012-04-30 08:05:55 America/Los_Angeles",
     "original_purchase_date": "2012-04-30 15:05:55 Etc/GMT",
     "purchase_date": "2012-04-30 15:05:55 Etc/GMT",
@@ -20,7 +20,7 @@ object IAPPlan extends Plan {
     "original_purchase_date_ms": "1335798355868",
     "transaction_id": "1000000046178817",
     "quantity": "1",
-    "product_id": "com.mindmobapp.download",
+    "product_id": "com.meetup.download",
     "bvrs": "20120427",
     "purchase_date_ms": "1335798355868"
   }
