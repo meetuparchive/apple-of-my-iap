@@ -1,4 +1,4 @@
-package com.meetup.iap
+package com.meetup.iap.receipt
 
 import com.meetup.base.util.TimeUtil
 import com.meetup.business.iap.AppleApi.{ReceiptResponse, ReceiptInfo}

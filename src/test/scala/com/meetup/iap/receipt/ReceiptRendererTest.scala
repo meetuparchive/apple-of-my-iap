@@ -1,4 +1,4 @@
-package com.meetup.iap
+package com.meetup.iap.receipt
 
 import com.meetup.scalacheck.ScalaTestPropertySpec
 import com.meetup.business.iap.AppleApi
