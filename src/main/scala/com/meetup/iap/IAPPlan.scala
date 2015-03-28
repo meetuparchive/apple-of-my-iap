@@ -1,30 +1,31 @@
 package com.meetup.iap
 
-import unfiltered.filter.Plan
+import unfiltered.filter.Planify
 import unfiltered.request._
 import unfiltered.response._
+import unfiltered.directives._
 
-object IAPPlan extends Plan {
-  def intent = {
-    case POST(_) => ResponseString("""
-{
-  "status": 0,
-  "receipt": {
-    "item_id": "521129812",
-    "bid": "com.meetup.Meetup",
-    "purchase_date_pst": "2012-04-30 08:05:55 America/Los_Angeles",
-    "original_purchase_date": "2012-04-30 15:05:55 Etc/GMT",
-    "purchase_date": "2012-04-30 15:05:55 Etc/GMT",
-    "original_purchase_date_pst": "2012-04-30 08:05:55 America/Los_Angeles",
-    "original_transaction_id": "1000000046178817",
-    "original_purchase_date_ms": "1335798355868",
-    "transaction_id": "1000000046178817",
-    "quantity": "1",
-    "product_id": "com.meetup.download",
-    "bvrs": "20120427",
-    "purchase_date_ms": "1335798355868"
-  }
-}
-""")
-  }
+import org.json4s.native.JsonMethods._
+import org.json4s.JsonAST.{JString, JField}
+
+object IAPPlan extends Templates {
+
+  def getOrBad[T](opt: Option[T]) =
+    opt.map(Directives.success).getOrElse(Directives.failure(BadRequest))
+
+  def plan = Planify { Directive.Intent {
+    case GET(Path("/")) => Directives.success(index)
+
+    //curl -d '{"receipt-data":"abcd"}' http://localhost:9090/verifyRceipt
+    case req @ POST(Path("/verifyReceipt")) => {
+      for {
+        json <- getOrBad(parseOpt(Body.string(req)))
+      } yield {
+        json \ "receipt-data" match {
+          case JString(receipt) => ResponseString(receipt)
+          case _ => BadRequest
+        }
+      }
+    }
+  } }
 }
