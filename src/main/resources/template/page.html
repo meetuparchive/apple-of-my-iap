@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-controller="controller">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css" />
+  <title>Apple IAP Mock Service</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-resource.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.min.js"></script>
+
+  <script src="/js/iap-service.js"></script>
+  <link href="/css/iap-service.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">IAP Apple Mock Service</a>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#active">Active Subs</a></li>
+          <li><a href="#finished">Finished Subs</a></li>
+          <li><a href="#add">Add Sub</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Create new receipt</h1>
+    <form class="form-inline">
+      <div class="form-group form-group-lg">
+        <label for="orgPlan" class="lead" style="margin-right: 30px;">Org Plan</label>
+        <select id="orgPlan" class="form-control"
+          style="width: 300px; margin-right:30px;"
+          ng-model="selectedPlan"
+          ng-options="plan as plan.name for plan in plans">
+        </select>
+        <button ng-click="createReceipt()" class="btn btn-default btn-lg">create receipt</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</body>
+</html>
