@@ -12,11 +12,11 @@ class ReceiptRendererTest extends ScalaTestPropertySpec {
     val originalPurchaseDate = purchaseDate
 
     val receipt = ReceiptInfo(
-      productId = "product_123",
-      transactionId = "trans_1234",
-      purchaseDate = purchaseDate,
-      originalPurchaseDate = originalPurchaseDate,
-      originalTransactionId = "orig_trans_1233"
+        originalPurchaseDate,
+        "orig_trans_1233",
+        "trans_1234",
+        purchaseDate,
+        "product_123"
     )
 
     val json = ReceiptRenderer(ReceiptResponse(receipt))

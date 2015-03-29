@@ -7,7 +7,7 @@ import java.util.Date
 
 import org.json4s.JsonDSL._
 import org.json4s.native.JsonMethods._
-import org.json4s.JValue
+import org.json4s.JsonAST.JValue
 
 object ReceiptRenderer {
   private def asGmt(date: Date): Date = TimeUtil.translateTime(date, TimeUtil.MEETUP_TZ, TimeUtil.GMT_TZ)
@@ -15,8 +15,8 @@ object ReceiptRenderer {
   def apply(response: ReceiptResponse): String = {
     pretty(render(
       ("receipt" -> renderReceipt(response.receipt)) ~
-      ("latest_receipt_info" -> response.latestReceiptInfo.map(renderReceipt)) ~
-      ("latest_expired_receipt_info" -> response.latestExpiredReceiptInfo.map(renderReceipt)) ))
+        ("latest_receipt_info" -> response.latestReceiptInfo.map(renderReceipt)) ~
+        ("latest_expired_receipt_info" -> response.latestExpiredReceiptInfo.map(renderReceipt)) ))
   }
 
   private def renderReceipt(receiptInfo: ReceiptInfo): JValue = {
@@ -29,19 +29,23 @@ object ReceiptRenderer {
     val purchaseDate = TimeUtil.getFormattedDate(gmtPurchaseDate, TimeUtil.timedateFormat)
     val purchaseDateMs = gmtPurchaseDate.getTime
 
-    parse(s"""{
-      "item_id": "521129812",
-      "bid": "com.meetup.Meetup",
-      "product_id": "${receiptInfo.productId}",
-      "transaction_id": "${receiptInfo.transactionId}",
-      "purchase_date": "$purchaseDate Etc/GMT",
-      "purchase_date_ms": "$purchaseDateMs"
-      "original_transaction_id": "${receiptInfo.originalTransactionId}",
-      "original_purchase_date": "$origPurchaseDate Etc/GMT",
-      "original_purchase_date_ms": "$origPurchaseDateMs",
-      "quantity": "1",
-      "bvrs": "20120427",
-    }""")
-  }
+    val cancellationDate = receiptInfo.cancellationDate.map { date =>
+      val gmt = asGmt(receiptInfo.purchaseDate)
+      TimeUtil.getFormattedDate(gmt, TimeUtil.timedateFormat)
+    }
 
+    ("original_transaction_id" -> receiptInfo.originalTransactionId) ~
+      ("original_purchase_date" -> s"$origPurchaseDate Etc/GMT") ~
+      ("original_purchase_date_ms" -> origPurchaseDateMs.toString) ~
+      ("purchase_date" -> s"$purchaseDate Etc/GMT") ~
+      ("purchase_date_ms" -> purchaseDateMs.toString) ~
+      ("product_id" -> receiptInfo.productId) ~
+      ("transaction_id" -> receiptInfo.transactionId) ~
+      ("cancellation_date" -> cancellationDate.map(d => s"$d Etc/GMT")) ~
+      // Just some dump generic stuff that you'll find in their response.
+      ("item_id" -> "521129812") ~
+      ("bid" -> "com.meetup.Meetup") ~
+      ("quantity" -> "1") ~
+      ("bvrs" -> "20120427")
+  }
 }
