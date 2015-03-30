@@ -1,6 +1,7 @@
 package com.meetup.iap.receipt
 
-import com.meetup.business.iap.AppleApi.ReceiptInfo
+import com.meetup.iap.AppleApi
+import AppleApi.ReceiptInfo
 import java.util.Date
 
 /**

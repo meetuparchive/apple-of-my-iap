@@ -1,7 +1,8 @@
 package com.meetup.iap.receipt
 
 import com.meetup.db.adapter.OrgPlanAdapter
-import com.meetup.business.iap.AppleApi.{ReceiptResponse, ReceiptInfo}
+import com.meetup.iap.AppleApi
+import AppleApi.{ReceiptResponse, ReceiptInfo}
 import org.joda.time.DateTime
 
 object ReceiptGenerator {
