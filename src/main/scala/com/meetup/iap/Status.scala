@@ -1,6 +1,12 @@
 package com.meetup.iap
 
-// https://developer.apple.com/library/ios/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html#//apple_ref/doc/uid/TP40010573-CH104-SW5
+/** Status is the root of a sealed type hierarchy of possible IAP response
+    statuses, as documented at:
+  
+    https://developer.apple.com/library/ios/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html#//apple_ref/doc/uid/TP40010573-CH104-SW5
+ 
+    One addition, Unknown, has been made to this set in order to capture any
+    undocumented statuses that may be sent. */
 sealed abstract class Status(val code: Int, val description: String) {
   final def name = getClass.getName.replace("$", "")
   final def tuple = (code, this)
@@ -19,8 +25,8 @@ case object ServerUnavailable extends Status(21005, "The receipt server is not c
     decoded and returned as part of the response. Only returned for iOS 6
     style transaction receipts for auto-renewable subscriptions. */
 case object SubscriptionExpired extends Status(21006, "This receipt is valid but the subscription has expired.")
-case object TestToProd extends Status(21007, "This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.")
-case object ProdToTest extends Status(21008, "This receipt is from the production environment, but it was sent to the test environment for verification. Send it to the production environment instead")
+case object TestToProduction extends Status(21007, "This receipt is from the test environment, but it was sent to the production environment for verification. Send it to the test environment instead.")
+case object ProductionToTest extends Status(21008, "This receipt is from the production environment, but it was sent to the test environment for verification. Send it to the production environment instead")
 /** This is a stand-in for undocumented or new status codes. */
 final case class Unknown private[iap] (override val code: Int) extends Status(code, "Unknown status.")
 
@@ -34,8 +40,8 @@ object Status {
     SharedSecretMismatch.tuple,
     ServerUnavailable.tuple,
     SubscriptionExpired.tuple,
-    TestToProd.tuple,
-    ProdToTest.tuple
+    TestToProduction.tuple,
+    ProductionToTest.tuple
   )
 
   /** Given a status code, resolve a defined status or fall back to unknown. */
