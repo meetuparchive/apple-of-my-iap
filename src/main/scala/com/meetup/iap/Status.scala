@@ -2,7 +2,8 @@ package com.meetup.iap
 
 // https://developer.apple.com/library/ios/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html#//apple_ref/doc/uid/TP40010573-CH104-SW5
 sealed abstract class Status(val code: Int, val description: String) {
-  def tuple = (code, this)
+  final def name = getClass.getName.replace("$", "")
+  final def tuple = (code, this)
 }
 /** The submitted receipt is valid. All other statuses indicate some kind
     of error. */
