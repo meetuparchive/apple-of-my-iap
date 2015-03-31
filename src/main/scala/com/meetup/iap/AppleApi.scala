@@ -2,7 +2,8 @@ package com.meetup.iap
 
 import java.util.Date
 
-import org.json4s.DefaultFormats
+import org.json4s.{DefaultFormats, JValue}
+import org.json4s.JsonAST.JInt
 import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization.read
 import java.text.SimpleDateFormat
@@ -38,4 +39,15 @@ object AppleApi {
 
   def parseResponse(json: String): ReceiptResponse =
     read[ReceiptResponse](compact(render(parse(json).camelizeKeys)))
+
+  /** Safely extract a receipt response from a parsed JSON structure. */
+  def parseResponse(j: JValue): Either[Either[String, Status], ReceiptResponse] =
+    j \ "status" match {
+      case JInt(code) =>
+        Status.get(code.toInt) match {
+          case ValidReceipt => Right(read[ReceiptResponse](compact(render(j.camelizeKeys))))
+          case s => Left(Right(s))
+        }
+      case _ => Left(Left("Invalid JSON"))
+    }
 }
