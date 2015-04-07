@@ -15,3 +15,12 @@ table tbody td {
     width: 300px;
     margin-right: 10px;
 }
+
+.container.subscriptions h3 {
+    margin-top: 4px;
+}
+
+.subscriptions .charges.panel {
+    clear: both;
+    margin-top: 20px;
+}

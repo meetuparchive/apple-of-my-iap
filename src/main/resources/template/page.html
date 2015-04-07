@@ -35,7 +35,7 @@
     </div>
   </nav>
 
-  <div class="container">
+  <div class="container subscriptions">
     <h2>Subscriptions</h2>
     <div class="panel panel-default">
       <div class="list-group">
@@ -54,10 +54,8 @@
               data-target="#response-modal">Response</button>
 
           </div>
-          <h3 class="mono" style="margin-top: 4px;">{{sub.receipt}} <small>{{sub.originalReceipt.originalPurchaseDate}}</small></h3>
-          <div class="panel panel-default collapse"
-            id="charges-{{sub.receipt}}"
-            style="clear:both; margin-top: 20px;">
+          <h3 class="mono">{{sub.receipt}} <small>{{sub.originalReceipt.originalPurchaseDate}}</small></h3>
+          <div class="panel panel-default collapse charges" id="charges-{{sub.receipt}}">
             <table class="table">
               <thead>
                 <tr>
