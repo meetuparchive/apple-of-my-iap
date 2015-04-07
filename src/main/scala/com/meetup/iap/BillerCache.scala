@@ -1,14 +1,12 @@
 package com.meetup.iap
 
 import com.meetup.iap.receipt.Subscription
-import com.meetup.util.{Logging, C}
+import com.meetup.util.Logging
 
 import java.io.File
 import scala.io.Source
-import scala.collection.mutable.{Map => MMap}
 
 import org.json4s.DefaultFormats
-import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization.{read, writePretty}
 import org.apache.commons.io.FileUtils
 
@@ -34,17 +32,17 @@ object BillerCache extends Logging {
     TempFile.createNewFile
   }
 
-  def readFromCache(): MMap[String, Subscription] = {
+  def readFromCache(): Map[String, Subscription] = {
     log.info("Reading from file: " + TempFile.getAbsolutePath)
     val raw = Source.fromFile(TempFile).mkString.trim
 
     if(raw.nonEmpty) {
-        MMap(read[Map[String, Subscription]](raw).toSeq: _*)
-    } else MMap()
+        Map(read[Map[String, Subscription]](raw).toSeq: _*)
+    } else Map.empty
   }
 
-  def writeToCache(subs: MMap[String, Subscription]) {
-    val json = writePretty(subs.toMap)
+  def writeToCache(subs: Map[String, Subscription]) {
+    val json = writePretty(subs)
     FileUtils.writeStringToFile(TempFile, json, "UTF-8")
   }
 }

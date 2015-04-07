@@ -1,13 +1,13 @@
 package com.meetup.iap
 
+import com.meetup.db.adapter.OrgPlanAdapter
 import com.meetup.db.OrgSubscriptionQueries
 import com.meetup.iap.receipt.{ReceiptGenerator, Subscription}
 import com.meetup.util.Logging
 
+import java.util.concurrent.ConcurrentHashMap
+import scala.collection.concurrent.{Map => CMap}
 import scala.collection.JavaConverters._
-import scala.collection.mutable.{Map => MMap}
-
-import com.meetup.db.adapter.OrgPlanAdapter
 
 object Biller extends Logging {
   lazy val plans: Map[Int, OrgPlanAdapter] = {
@@ -21,7 +21,8 @@ object Biller extends Logging {
     (v.getOrgPlanApple.getAppleItemRef, v)
   }.toMap
 
-  private var _subscriptions: MMap[String, Subscription] = MMap.empty
+  private val _subscriptions: CMap[String, Subscription] =
+    new ConcurrentHashMap[String, Subscription].asScala
 
   def subscriptions = _subscriptions.toMap
 
@@ -31,7 +32,7 @@ object Biller extends Logging {
     val sub = Subscription(receiptEncoding, receipt)
 
     _subscriptions.put(receiptEncoding, sub)
-    BillerCache.writeToCache(_subscriptions)
+    BillerCache.writeToCache(subscriptions)
     sub
   }
 
@@ -40,28 +41,29 @@ object Biller extends Logging {
       val latestReceipt = ReceiptGenerator(orgPlan, Right(sub))
       val updatedSub = sub.addReceipt(latestReceipt)
       _subscriptions.put(sub.receipt, updatedSub)
-      BillerCache.writeToCache(_subscriptions)
+
+      BillerCache.writeToCache(subscriptions)
     }
   }
 
   def cancelSub(sub: Subscription) {
     _subscriptions.put(sub.receipt, sub.cancel())
-    BillerCache.writeToCache(_subscriptions)
+    BillerCache.writeToCache(subscriptions)
   }
 
   def clearSubs() = {
-    _subscriptions = MMap()
-    BillerCache.writeToCache(_subscriptions)
+    _subscriptions.clear()
+    BillerCache.writeToCache(subscriptions)
   }
 
   def shutdown() = {
 //    LocalTimer.shutdown()
-    BillerCache.writeToCache(_subscriptions)
+    BillerCache.writeToCache(subscriptions)
   }
 
   def start() {
     log.info("Reading subs from cache.")
-    _subscriptions = BillerCache.readFromCache()
+    BillerCache.readFromCache().foreach { case (k,v) => _subscriptions.put(k,v) }
     plans
   }
 
