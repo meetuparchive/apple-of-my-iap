@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
  */
 object AppleApi {
 
-  implicit val formats = new DefaultFormats {
+  implicit def formats = new DefaultFormats {
     override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'Etc/GMT'")
   }
 
