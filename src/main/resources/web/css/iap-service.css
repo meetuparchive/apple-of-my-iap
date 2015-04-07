@@ -11,7 +11,7 @@ table tbody td {
     font-family: 'Ubuntu Mono', monospace;
 }
 
-#orgPlan {
+.org-plan.form-control {
     width: 300px;
     margin-right: 10px;
 }
