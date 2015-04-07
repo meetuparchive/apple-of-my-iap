@@ -10,3 +10,8 @@ body .mono {
 table tbody td {
     font-family: 'Ubuntu Mono', monospace;
 }
+
+#orgPlan {
+    width: 300px;
+    margin-right: 10px;
+}

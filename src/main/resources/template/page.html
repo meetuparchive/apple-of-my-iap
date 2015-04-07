@@ -8,11 +8,6 @@
   <title>Apple IAP Mock Service</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
   <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-resource.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.min.js"></script>
-
-  <script src="/js/iap-service.js"></script>
   <link href="/css/iap-service.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
@@ -29,7 +24,6 @@
       </div>
       <div class="collapse navbar-collapse navbar-left form-inline">
         <select id="orgPlan" class="form-control"
-          style="width: 300px; margin-right:10px;"
           ng-model="selectedPlan"
           ng-options="plan as plan.name for plan in plans">
         </select>
@@ -57,7 +51,7 @@
             <button class="btn btn-default"
               ng-click="verifyResponse(sub.receipt)"
               data-toggle="modal"
-              data-target="#response-modal-{{sub.receipt}}">Response</button>
+              data-target="#response-modal">Response</button>
 
           </div>
           <h3 class="mono" style="margin-top: 4px;">{{sub.receipt}} <small>{{sub.originalReceipt.originalPurchaseDate}}</small></h3>
@@ -81,22 +75,23 @@
               </tbody>
             </table>
           </div>
-          <div class="modal fade" id="response-modal-{{sub.receipt}}" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title mono">{{sub.receipt}}</h4>
-                </div>
-                <div class="modal-body">
-                  <pre id="response-{{sub.receipt}}"></pre>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="response-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title mono">{{response.receipt}}</h4>
+        </div>
+        <div class="modal-body">
+          <pre>{{response.data}}</pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -120,7 +115,13 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-resource.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.min.js"></script>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+  <script src="/js/iap-service.js"></script>
 </body>
 </html>

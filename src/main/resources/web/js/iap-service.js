@@ -27,8 +27,16 @@ angular.module('app', ['services'])
       };
 
       $scope.verifyResponse = function(receipt) {
+        $scope.response = {
+          "receipt": receipt,
+          "data": "..."
+        };
+
         Apple.verifyResponse(receipt).success(function(res) {
-          $('#response-' + receipt).html(JSON.stringify(res, null, 2));
+          $scope.response = {
+            "receipt": receipt,
+            "data": JSON.stringify(res, null, 2)
+          };
         });
       }
 
