@@ -26,6 +26,12 @@ angular.module('app', ['services'])
         });
       };
 
+      $scope.refundTransaction = function(receipt, transactionId) {
+      	Subs.refundTransaction(receipt, transactionId).success(function() {
+      	  loadSubs();
+      	});
+      };
+
       $scope.verifyResponse = function(receipt) {
         $scope.response = {
           "receipt": receipt,
@@ -83,6 +89,9 @@ angular.module('services', [])
       },
       'cancelSub': function(receipt) {
         return $http.post("/subs/" + receipt + "/cancel")
+      },
+      'refundTransaction': function(receipt, transactionId) {
+      	return $http.post("/subs/" + receipt + "/refund/" + transactionId)
       },
       'clearSubs': function() {
         return $http.post("/subs/clear");

@@ -69,6 +69,7 @@
                   <td>{{receipt.receipt}}</td>
                   <td>{{receipt.transactionId}}</td>
                   <td>{{receipt.purchaseDate}}</td>
+                  <td ng-if="sub.status == 'active'"><button class="btn btn-warning" ng-click="refundTransaction(sub.receipt, receipt.transactionId)">Refund</button></td>
                 </tr>
               </tbody>
             </table>

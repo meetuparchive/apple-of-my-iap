@@ -78,6 +78,17 @@ object IAPPlan extends Logging {
         JsonContent ~> Ok
       }
 
+
+    case POST(Path(Seg("subs" :: receiptEncoded :: "refund" :: transactionId :: Nil))) =>
+      for {
+        sub <- getOrBad(Biller.subscriptions.get(receiptEncoded))
+        receiptInfo <- getOrBad(sub.transactionMap.get(transactionId))
+      } yield {
+        Biller.refundTransaction(sub, receiptInfo)
+        JsonContent ~> Ok
+      }
+
+
     case GET(Path("/subs")) => Directives.success {
       val sortedSubs =
         Biller.subscriptions.values

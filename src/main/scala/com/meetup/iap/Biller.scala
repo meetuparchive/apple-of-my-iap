@@ -8,6 +8,8 @@ import com.meetup.util.Logging
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.concurrent.{Map => CMap}
 import scala.collection.JavaConverters._
+import com.meetup.iap.AppleApi.ReceiptInfo
+import java.util.Date
 
 object Biller extends Logging {
   lazy val plans: Map[Int, OrgPlanAdapter] = {
@@ -48,6 +50,12 @@ object Biller extends Logging {
 
   def cancelSub(sub: Subscription) {
     _subscriptions.put(sub.receipt, sub.cancel())
+    BillerCache.writeToCache(subscriptions)
+  }
+
+  def refundTransaction(sub: Subscription, receiptInfo: ReceiptInfo) {
+    log.info(s"Refunding transaction: ${receiptInfo.transactionId}")
+    _subscriptions.put(sub.receipt, sub.refund(receiptInfo))
     BillerCache.writeToCache(subscriptions)
   }
 
