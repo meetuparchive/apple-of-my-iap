@@ -69,7 +69,9 @@
                   <td>{{receipt.receipt}}</td>
                   <td>{{receipt.transactionId}}</td>
                   <td>{{receipt.purchaseDate}}</td>
-                  <td ng-if="sub.status == 'active'"><button class="btn btn-warning" ng-click="refundTransaction(sub.receipt, receipt.transactionId)">Refund</button></td>
+                  <td><button class="refund-btn btn btn-danger" 
+                      ng-class="{disabled: sub.status == 'active' && receipt.cancellationDate}" 
+                      ng-click="refundTransaction(sub.receipt, receipt.transactionId)">Refund</button></td>
                 </tr>
               </tbody>
             </table>
@@ -108,7 +110,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-          <button type="button" class="btn btn-danger" ng-click="clearSubs()">Clear Data</button>
+          <button type="button" class="btn btn-warning" ng-click="clearSubs()">Clear Data</button>
         </div>
       </div>
     </div>

@@ -43,7 +43,7 @@ object Biller extends Logging {
       val latestReceipt = ReceiptGenerator(orgPlan, Right(sub))
       val updatedSub = sub.addReceipt(latestReceipt)
       _subscriptions.put(sub.receipt, updatedSub)
-
+	
       BillerCache.writeToCache(subscriptions)
     }
   }

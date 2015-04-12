@@ -27,13 +27,11 @@ case class Subscription(
     val cancellationDate = Some(new Date())
     val newReceipt = receiptInfo.copy(cancellationDate = cancellationDate)
     if (receiptInfo.transactionId == originalReceipt.transactionId) this.copy(originalReceipt = newReceipt)
-    else {
-      this.copy(receipts = receipts.map { r =>
-          if (r.transactionId == newReceipt.transactionId) newReceipt else r
+    this.copy(receipts = receipts.map { r =>
+        if (r.transactionId == newReceipt.transactionId) newReceipt else r
       })
     }
   }
-}
 
 object Subscription {
   object Status {
