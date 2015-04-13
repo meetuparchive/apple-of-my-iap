@@ -24,3 +24,9 @@ table tbody td {
     clear: both;
     margin-top: 20px;
 }
+
+.refund-btn {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}

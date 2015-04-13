@@ -27,6 +27,10 @@
           ng-model="selectedPlan"
           ng-options="plan as plan.name for plan in plans">
         </select>
+        <select class="form-control"
+          ng-model="selectedStatus"
+          ng-options="status as status.code + ': ' + status.name for status in statuses">
+        </select>
         <button ng-click="createSub()" class="btn btn-primary navbar-btn">Create</button>
       </div>
       <div class="collapse navbar-collapse navbar-right form-inline">
@@ -41,18 +45,25 @@
       <div class="list-group">
         <div class="list-group-item clearfix" ng-repeat="sub in subs">
           <div class="pull-right">
-            <button ng-if="sub.status == 'active'" ng-click="renewSub(sub.receipt)" class="btn btn-success">Renew</button>
-            <button ng-if="sub.status == 'active'" ng-click="cancelSub(sub.receipt)" class="btn btn-danger">Cancel</button>
-            <button class="btn btn-primary"
-              data-toggle="collapse"
-              data-target="#charges-{{sub.receipt}}">Charges
-              <span class="badge">{{sub.receipts.length}}</span>
-            </button>
-            <button class="btn btn-default"
-              ng-click="verifyResponse(sub.receipt)"
-              data-toggle="modal"
-              data-target="#response-modal">Response</button>
+            <div class="form-inline">
+              <select ng-if="sub.subStatus=='active'" class="form-control"
+                      ng-init="selectedRenewStatus[sub.receipt] = statuses[0]"
+                      ng-model="selectedRenewStatus[sub.receipt]"
+                      ng-options="status as status.code + ': ' + status.name for status in statuses">
+              </select>
+              <button ng-if="sub.subStatus == 'active'" ng-click="renewSub(sub.receipt)" class="btn btn-success">Renew</button>
+              <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receipt)" class="btn btn-danger">Cancel</button>
+              <button class="btn btn-primary"
+                data-toggle="collapse"
+                data-target="#charges-{{sub.receipt}}">Charges
+                <span class="badge">{{sub.receipts.length}}</span>
+              </button>
+              <button class="btn btn-default"
+                ng-click="verifyResponse(sub.receipt)"
+                data-toggle="modal"
+                data-target="#response-modal">Response</button>
 
+            </div>
           </div>
           <h3 class="mono">{{sub.receipt}} <small>{{sub.originalReceipt.originalPurchaseDate}}</small></h3>
           <div class="panel panel-default collapse charges" id="charges-{{sub.receipt}}">
@@ -69,6 +80,9 @@
                   <td>{{receipt.receipt}}</td>
                   <td>{{receipt.transactionId}}</td>
                   <td>{{receipt.purchaseDate}}</td>
+                  <td><button class="refund-btn btn btn-danger" 
+                      ng-class="{disabled: sub.status == 'active' && receipt.cancellationDate}" 
+                      ng-click="refundTransaction(sub.receipt, receipt.transactionId)">Refund</button></td>
                 </tr>
               </tbody>
             </table>
@@ -107,7 +121,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-          <button type="button" class="btn btn-danger" ng-click="clearSubs()">Clear Data</button>
+          <button type="button" class="btn btn-warning" ng-click="clearSubs()">Clear Data</button>
         </div>
       </div>
     </div>

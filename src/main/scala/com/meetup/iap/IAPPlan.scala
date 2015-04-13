@@ -32,6 +32,17 @@ object IAPPlan extends Logging {
     getOrBad(orgPlanId)
   }
 
+  private def getStatusCode(json: JValue) = {
+    val statusCode: Option[Int] = 
+      json \ "status" match {
+        case JString(id) => Try(id.toInt).toOption
+        case JInt(id) => Some(id.toInt)
+        case _ => None 
+      }
+
+    getOrBad(statusCode)
+  }
+
   private def getReceiptData(json: JValue) = {
     val receiptOpt = json \ "receipt-data" match {
       case JString(receipt) => Some(receipt)
@@ -78,6 +89,17 @@ object IAPPlan extends Logging {
         JsonContent ~> Ok
       }
 
+
+    case POST(Path(Seg("subs" :: receiptEncoded :: "refund" :: transactionId :: Nil))) =>
+      for {
+        sub <- getOrBad(Biller.subscriptions.get(receiptEncoded))
+        receiptInfo <- getOrBad(sub.transactionMap.get(transactionId))
+      } yield {
+        Biller.refundTransaction(sub, receiptInfo)
+        JsonContent ~> Ok
+      }
+
+
     case GET(Path("/subs")) => Directives.success {
       val sortedSubs =
         Biller.subscriptions.values
@@ -88,15 +110,16 @@ object IAPPlan extends Logging {
       JsonContent ~> ResponseString(writePretty(sortedSubs))
     }
 
-    // curl -d '{"orgPlanId":""}' http://localhost:9090/receipts
+    // curl -d '{"orgPlanId":"", "status":""}' http://localhost:9090/receipts
     case req @ POST(Path("/subs")) =>
       for {
         json <- getOrBad(parseOpt(Body.string(req)))
         orgPlanId <- getOrgPlanId(json)
         orgPlan <- getOrBad(Biller.plans.get(orgPlanId))
+        status <- getStatusCode(json)
       } yield {
-        log.info(s"Creating receipt for plan '${orgPlan.getName}'")
-        val sub = Biller.createSub(orgPlan)
+        log.info(s"Creating receipt for plan '${orgPlan.getName}' with status: $status")
+        val sub = Biller.createSub(orgPlan, status)
         JsonContent ~> ResponseString(writePretty(sub))
       }
 

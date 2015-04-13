@@ -21,9 +21,15 @@ angular.module('app', ['services'])
       }
 
       $scope.createSub = function() {
-        Subs.createSub($scope.selectedPlan.id).success(function(res) {
+        Subs.createSub($scope.selectedPlan.id, $scope.selectedStatus.code).success(function(res) {
           loadSubs();
         });
+      };
+
+      $scope.refundTransaction = function(receipt, transactionId) {
+      	Subs.refundTransaction(receipt, transactionId).success(function() {
+      	  loadSubs();
+      	});
       };
 
       $scope.verifyResponse = function(receipt) {
@@ -48,8 +54,20 @@ angular.module('app', ['services'])
       };
 
       Plans.getPlans().success(function(res) {
-        $scope.plans = res
-        $scope.selectedPlan = $scope.plans[0]
+        $scope.plans = res;
+        $scope.selectedPlan = $scope.plans[0];
+        $scope.statuses = [
+            {"code": "0"  , "name":"Valid Receipt"},
+            {"code": "21000", "name":"Bad Envelope"},
+            {"code": "21002", "name":"Bad Receipt"},
+            {"code": "21003", "name":"Unauthorized Receipt"},
+            {"code": "21004", "name":"Shared Secret Mismatch"},
+            {"code": "21005", "name":"Server Unavailable"},
+            {"code": "21006", "name":"SubscriptionExpired"},
+            {"code": "21007", "name":"Test To Production"},
+            {"code": "21008", "name":"Production To Test"}
+        ]; 
+        $scope.selectedStatus = $scope.statuses[0];
       });
 
       loadSubs()
@@ -75,14 +93,17 @@ angular.module('services', [])
       'getSubs': function() {
         return $http.get("/subs");
       },
-      'createSub': function(planId) {
-        return $http.post("/subs", {"orgPlanId":planId});
+      'createSub': function(planId, statusCode) {
+        return $http.post("/subs", {"orgPlanId":planId, "status":statusCode});
       },
       'renewSub': function(receipt) {
         return $http.post("/subs/" + receipt + "/renew")
       },
       'cancelSub': function(receipt) {
         return $http.post("/subs/" + receipt + "/cancel")
+      },
+      'refundTransaction': function(receipt, transactionId) {
+      	return $http.post("/subs/" + receipt + "/refund/" + transactionId)
       },
       'clearSubs': function() {
         return $http.post("/subs/clear");
