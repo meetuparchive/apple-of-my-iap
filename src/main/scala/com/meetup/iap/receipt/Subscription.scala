@@ -19,7 +19,7 @@ case class Subscription(
     subStatus: String = Subscription.Status.Active ) {
 
   val transactionMap = receipts.map(r => r.transactionId -> r).toMap + (originalReceipt.transactionId -> originalReceipt)
-  def addReceipt(receipt: ReceiptInfo) = this.copy(receipts = receipt :: receipts)
+  def addReceipt(receipt: ReceiptInfo, status: Int) = this.copy(receipts = receipt :: receipts, status = status)
   def cancel() = {
     this.copy(subStatus = Subscription.Status.Cancelled)
   }

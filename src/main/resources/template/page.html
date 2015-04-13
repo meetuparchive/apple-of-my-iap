@@ -52,7 +52,7 @@
                       ng-options="status as status.code + ': ' + status.name for status in statuses">
               </select>
               <button ng-if="sub.subStatus == 'active'" ng-click="renewSub(sub.receipt)" class="btn btn-success">Renew</button>
-              <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receipt)" class="btn btn-danger">Cancel</button>
+              <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receipt)" class="btn btn-warning">Cancel</button>
               <button class="btn btn-primary"
                 data-toggle="collapse"
                 data-target="#charges-{{sub.receipt}}">Charges
@@ -81,7 +81,7 @@
                   <td>{{receipt.transactionId}}</td>
                   <td>{{receipt.purchaseDate}}</td>
                   <td><button class="refund-btn btn btn-danger" 
-                      ng-class="{disabled: sub.status == 'active' && receipt.cancellationDate}" 
+                      ng-class="{disabled: sub.subStatus == 'active' && receipt.cancellationDate}"
                       ng-click="refundTransaction(sub.receipt, receipt.transactionId)">Refund</button></td>
                 </tr>
               </tbody>
