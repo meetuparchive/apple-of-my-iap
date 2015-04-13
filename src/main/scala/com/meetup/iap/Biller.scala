@@ -38,10 +38,10 @@ object Biller extends Logging {
     sub
   }
 
-  def renewSub(sub: Subscription) {
+  def renewSub(sub: Subscription, status: Int = 0) {
     plansByAppleRef.get(sub.originalReceipt.productId).map { orgPlan =>
       val latestReceipt = ReceiptGenerator(orgPlan, Right(sub))
-      val updatedSub = sub.addReceipt(latestReceipt)
+      val updatedSub = sub.addReceipt(latestReceipt, status)
       _subscriptions.put(sub.receipt, updatedSub)
 	
       BillerCache.writeToCache(subscriptions)

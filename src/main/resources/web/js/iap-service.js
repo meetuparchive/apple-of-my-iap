@@ -9,7 +9,7 @@ angular.module('app', ['services'])
       }
 
       $scope.renewSub = function(receipt) {
-        Subs.renewSub(receipt).success(function() {
+        Subs.renewSub(receipt, $scope.selectedRenewStatus[receipt].code).success(function() {
           loadSubs();
         });
       };
@@ -70,6 +70,8 @@ angular.module('app', ['services'])
         $scope.selectedStatus = $scope.statuses[0];
       });
 
+      $scope.selectedRenewStatus = {};
+
       loadSubs()
     }]);
 
@@ -96,8 +98,8 @@ angular.module('services', [])
       'createSub': function(planId, statusCode) {
         return $http.post("/subs", {"orgPlanId":planId, "status":statusCode});
       },
-      'renewSub': function(receipt) {
-        return $http.post("/subs/" + receipt + "/renew")
+      'renewSub': function(receipt, statusCode) {
+        return $http.post("/subs/" + receipt + "/renew/" + statusCode)
       },
       'cancelSub': function(receipt) {
         return $http.post("/subs/" + receipt + "/cancel")

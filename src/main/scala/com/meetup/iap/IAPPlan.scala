@@ -32,6 +32,10 @@ object IAPPlan extends Logging {
     getOrBad(orgPlanId)
   }
 
+  private def getIntFromString(code: String) = {
+    getOrBad(Try(code.toInt).toOption)
+  }
+
   private def getStatusCode(json: JValue) = {
     val statusCode: Option[Int] = 
       json \ "status" match {
@@ -72,12 +76,13 @@ object IAPPlan extends Logging {
       JsonContent ~> Ok
     }
 
-    // curl -d '' http://localhost:9090/receipts/abcd/renew
-    case POST(Path(Seg("subs" :: receiptEncoded :: "renew" :: Nil))) =>
+    // curl -d '' http://localhost:9090/receipts/abcd/renew/<statusCode>
+    case POST(Path(Seg("subs" :: receiptEncoded :: "renew" :: statusCode :: Nil))) =>
       for {
         sub <- getOrBad(Biller.subscriptions.get(receiptEncoded))
+        code <- getIntFromString(statusCode)
       } yield {
-        Biller.renewSub(sub)
+        Biller.renewSub(sub, code)
         JsonContent ~> Ok
       }
 
