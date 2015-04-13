@@ -26,7 +26,8 @@ object AppleApi {
     receipt: ReceiptInfo,
     latestReceipt: Option[String] = None,
     latestReceiptInfo: Option[ReceiptInfo] = None,
-    latestExpiredReceiptInfo: Option[ReceiptInfo] = None )
+    latestExpiredReceiptInfo: Option[ReceiptInfo] = None,
+    statusCode: Int = 0)
 
   case class ReceiptInfo(
     originalPurchaseDate: Date,
