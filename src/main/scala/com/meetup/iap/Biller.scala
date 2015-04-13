@@ -28,10 +28,10 @@ object Biller extends Logging {
 
   def subscriptions = _subscriptions.toMap
 
-  def createSub(orgPlan: OrgPlanAdapter): Subscription = {
+  def createSub(orgPlan: OrgPlanAdapter, status: Int): Subscription = {
     val receiptEncoding = ReceiptGenerator.genEncoding(orgPlan, subscriptions.keySet)
     val receipt = ReceiptGenerator(orgPlan, Left(receiptEncoding))
-    val sub = Subscription(receiptEncoding, receipt)
+    val sub = Subscription(receiptEncoding, receipt, status)
 
     _subscriptions.put(receiptEncoding, sub)
     BillerCache.writeToCache(subscriptions)

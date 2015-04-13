@@ -14,13 +14,14 @@ case class Subscription(
     receipt: String,
     originalReceipt: ReceiptInfo,
     receipts: List[ReceiptInfo],
+    status: Int,
     auto: Boolean = false,
-    status: String = Subscription.Status.Active ) {
+    subStatus: String = Subscription.Status.Active ) {
 
   val transactionMap = receipts.map(r => r.transactionId -> r).toMap + (originalReceipt.transactionId -> originalReceipt)
   def addReceipt(receipt: ReceiptInfo) = this.copy(receipts = receipt :: receipts)
   def cancel() = {
-    this.copy(status = Subscription.Status.Cancelled)
+    this.copy(subStatus = Subscription.Status.Cancelled)
   }
 
   def refund(receiptInfo: ReceiptInfo) = {
@@ -38,6 +39,6 @@ object Subscription {
     val Active = "active"
     val Cancelled = "cancelled"
   }
-  def apply(receipt: String, originalReceipt: ReceiptInfo) =
-    new Subscription(receipt, originalReceipt, List(originalReceipt))
+  def apply(receipt: String, originalReceipt: ReceiptInfo, status: Int) =
+    new Subscription(receipt, originalReceipt, List(originalReceipt), status)
 }

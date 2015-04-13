@@ -53,16 +53,17 @@ object ReceiptGenerator {
 
     val latestReceiptInfo =
       sub.receipts.headOption
-        .filter(_ => sub.status == Subscription.Status.Active && sub.receipts.size > 1)
+        .filter(_ => sub.subStatus == Subscription.Status.Active && sub.receipts.size > 1)
 
     val latestExpiredReceiptInfo =
       sub.receipts.headOption
-        .filter(_ => sub.status == Subscription.Status.Cancelled && sub.receipts.size > 1)
+        .filter(_ => sub.subStatus == Subscription.Status.Cancelled && sub.receipts.size > 1)
 
     ReceiptResponse(
       origReceipt,
       latestReceiptInfo.map(_.receipt).flatten,
       latestReceiptInfo,
-      latestExpiredReceiptInfo )
+      latestExpiredReceiptInfo, 
+      sub.status )
   }
 }
