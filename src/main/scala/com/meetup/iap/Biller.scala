@@ -20,7 +20,7 @@ object Biller extends Logging {
   }
 
   lazy val plansByAppleRef: Map[String, OrgPlanAdapter] = plans.map { case (_,v) =>
-    (v.getOrgPlanApple.getAppleItemRef, v)
+    (v.getOrgPlanApple.getAppleProductRef, v)
   }.toMap
 
   private val _subscriptions: CMap[String, Subscription] =

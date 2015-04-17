@@ -27,7 +27,7 @@ object ReceiptGenerator {
 
     val purchaseDateTime = new DateTime()
     val purchaseDate = purchaseDateTime.toDate
-    val productId = orgPlan.getOrgPlanApple.getAppleItemRef
+    val productId = orgPlan.getOrgPlanApple.getAppleProductRef
     val transactionId = s"$productId-$purchaseDateTime"
 
     val (origPurchaseDate, origTransId, receipt) = receiptOrSub match {
