@@ -101,7 +101,7 @@ object IAPPlan extends Logging {
         receiptInfo <- getOrBad(sub.transactionMap.get(transactionId))
       } yield {
         Biller.refundTransaction(sub, receiptInfo)
-        JsonContent ~> Ok
+        NoContent ~> Ok
       }
 
 
