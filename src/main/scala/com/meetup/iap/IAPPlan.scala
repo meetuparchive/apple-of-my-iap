@@ -135,7 +135,7 @@ object IAPPlan extends Logging {
         receipt <- getReceiptData(json)
         sub <- getOrBad(Biller.subscriptions.get(receipt))
       } yield {
-        println(s"attempting to verifyReceipt for $receipt")
+        log.info(s"attempting to verifyReceipt for $receipt")
         val receiptResponse = ReceiptGenerator(sub)
         JsonContent ~> ResponseString(ReceiptRenderer(receiptResponse))
       }
