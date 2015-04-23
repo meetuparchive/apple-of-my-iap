@@ -18,7 +18,7 @@ object ReceiptRenderer {
       ("receipt" -> renderReceipt(response.receipt)) ~
         ("latest_receipt_info" -> response.latestReceiptInfo.map(renderReceipt)) ~
         ("latest_expired_receipt_info" -> response.latestExpiredReceiptInfo.map(renderReceipt)) ~
-        ("status" -> response.statusCode)~
+        ("status" -> response.statusCode) ~
         ("latestReceipt" -> response.latestReceipt)))
   }
 
