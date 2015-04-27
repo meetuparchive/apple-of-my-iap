@@ -30,8 +30,8 @@ object Biller extends Logging {
 
   def createSub(orgPlan: OrgPlanAdapter, status: Int): Subscription = {
     val receiptEncoding = ReceiptGenerator.genEncoding(orgPlan, subscriptions.keySet)
-    val receipt = ReceiptGenerator(orgPlan, Left(receiptEncoding))
-    val sub = Subscription(receiptEncoding, receipt, status)
+    val (_, receiptInfo) = ReceiptGenerator(orgPlan, Left(receiptEncoding))
+    val sub = Subscription(receiptEncoding, receiptInfo, status)
 
     _subscriptions.put(receiptEncoding, sub)
     BillerCache.writeToCache(subscriptions)
@@ -39,23 +39,23 @@ object Biller extends Logging {
   }
 
   def renewSub(sub: Subscription, status: Int = 0) {
-    plansByAppleRef.get(sub.originalReceipt.productId).map { orgPlan =>
-      val latestReceipt = ReceiptGenerator(orgPlan, Right(sub))
-      val updatedSub = sub.addReceipt(latestReceipt, status)
-      _subscriptions.put(sub.receipt, updatedSub)
+    plansByAppleRef.get(sub.latestReceiptInfo.productId).map { orgPlan =>
+      val (latestReceiptToken, latestReceiptInfo) = ReceiptGenerator(orgPlan, Right(sub))
+      val updatedSub = sub.addReceipt(latestReceiptInfo, status, latestReceiptToken)
+      _subscriptions.put(sub.receiptToken, updatedSub)
 	
       BillerCache.writeToCache(subscriptions)
     }
   }
 
   def cancelSub(sub: Subscription) {
-    _subscriptions.put(sub.receipt, sub.cancel())
+    _subscriptions.put(sub.receiptToken, sub.cancel())
     BillerCache.writeToCache(subscriptions)
   }
 
   def refundTransaction(sub: Subscription, receiptInfo: ReceiptInfo) {
     log.info(s"Refunding transaction: ${receiptInfo.transactionId}")
-    _subscriptions.put(sub.receipt, sub.refund(receiptInfo))
+    _subscriptions.put(sub.receiptToken, sub.refund(receiptInfo))
     BillerCache.writeToCache(subscriptions)
   }
 

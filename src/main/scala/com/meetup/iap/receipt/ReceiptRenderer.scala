@@ -15,11 +15,9 @@ object ReceiptRenderer {
 
   def apply(response: ReceiptResponse): String = {
     pretty(render(
-      ("receipt" -> renderReceipt(response.receipt)) ~
+      ("status" -> response.statusCode) ~
         ("latest_receipt_info" -> response.latestReceiptInfo.map(renderReceipt)) ~
-        ("latest_expired_receipt_info" -> response.latestExpiredReceiptInfo.map(renderReceipt)) ~
-        ("status" -> response.statusCode) ~
-        ("latestReceipt" -> response.latestReceipt)))
+        ("latest_receipt" -> response.latestReceipt)))
   }
 
   private def renderReceipt(receiptInfo: ReceiptInfo): JValue = {
@@ -32,23 +30,25 @@ object ReceiptRenderer {
     val purchaseDate = TimeUtil.getFormattedDate(gmtPurchaseDate, TimeUtil.timedateFormat)
     val purchaseDateMs = gmtPurchaseDate.getTime
 
+    val gmtExpiresDate = asGmt(receiptInfo.expiresDate)
+    val expiresDate = TimeUtil.getFormattedDate(gmtExpiresDate, TimeUtil.timedateFormat)
+    val expiresDateMs = gmtExpiresDate.getTime
+
     val cancellationDate = receiptInfo.cancellationDate.map { date =>
       val gmt = asGmt(receiptInfo.purchaseDate)
       TimeUtil.getFormattedDate(gmt, TimeUtil.timedateFormat)
     }
-
-    ("original_transaction_id" -> receiptInfo.originalTransactionId) ~
-      ("original_purchase_date" -> s"$origPurchaseDate Etc/GMT") ~
-      ("original_purchase_date_ms" -> origPurchaseDateMs.toString) ~
-      ("purchase_date" -> s"$purchaseDate Etc/GMT") ~
-      ("purchase_date_ms" -> purchaseDateMs.toString) ~
+    ("quantity" -> "1") ~
       ("product_id" -> receiptInfo.productId) ~
       ("transaction_id" -> receiptInfo.transactionId) ~
-      ("cancellation_date" -> cancellationDate.map(d => s"$d Etc/GMT")) ~
-      // Just some dump generic stuff that you'll find in their response.
-      ("item_id" -> "521129812") ~
-      ("bid" -> "com.meetup.Meetup") ~
-      ("quantity" -> "1") ~
-      ("bvrs" -> "20120427")
+      ("original_transaction_id" -> receiptInfo.originalTransactionId) ~
+      ("purchase_date" -> s"$purchaseDate Etc/GMT") ~
+      ("purchase_date_ms" -> purchaseDateMs.toString) ~
+      ("original_purchase_date" -> s"$origPurchaseDate Etc/GMT") ~
+      ("original_purchase_date_ms" -> origPurchaseDateMs.toString) ~
+      ("expires_date" -> s"$expiresDate Etc/GMT") ~
+      ("expires_date_ms" -> expiresDateMs.toString) ~
+      ("is_trial_period" -> receiptInfo.isTrialPeriod) ~
+      ("cancellation_date" -> cancellationDate.map(d => s"$d Etc/GMT"))
   }
 }

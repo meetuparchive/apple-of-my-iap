@@ -47,26 +47,26 @@
           <div class="pull-right">
             <div class="form-inline">
               <select ng-if="sub.subStatus=='active'" class="form-control"
-                      ng-init="selectedRenewStatus[sub.receipt] = statuses[0]"
-                      ng-model="selectedRenewStatus[sub.receipt]"
+                      ng-init="selectedRenewStatus[sub.receiptToken] = statuses[0]"
+                      ng-model="selectedRenewStatus[sub.receiptToken]"
                       ng-options="status as status.code + ': ' + status.name for status in statuses">
               </select>
-              <button ng-if="sub.subStatus == 'active'" ng-click="renewSub(sub.receipt)" class="btn btn-success">Renew</button>
-              <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receipt)" class="btn btn-warning">Cancel</button>
+              <button ng-if="sub.subStatus == 'active'" ng-click="renewSub(sub.receiptToken)" class="btn btn-success">Renew</button>
+              <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receiptToken)" class="btn btn-warning">Cancel</button>
               <button class="btn btn-primary"
                 data-toggle="collapse"
-                data-target="#charges-{{sub.receipt}}">Charges
-                <span class="badge">{{sub.receipts.length}}</span>
+                data-target="#charges-{{sub.receiptToken}}">Charges
+                <span class="badge">{{sub.receiptsList.length}}</span>
               </button>
               <button class="btn btn-default"
-                ng-click="verifyResponse(sub.receipt)"
+                ng-click="verifyResponse(sub.receiptToken)"
                 data-toggle="modal"
                 data-target="#response-modal">Response</button>
 
             </div>
           </div>
-          <h3 class="mono">{{sub.receipt}} <small>{{sub.originalReceipt.originalPurchaseDate}}</small></h3>
-          <div class="panel panel-default collapse charges" id="charges-{{sub.receipt}}">
+          <h3 class="mono">{{sub.receiptToken}} <small>{{sub.receiptsList[0].originalPurchaseDate}}</small></h3>
+          <div class="panel panel-default collapse charges" id="charges-{{sub.receiptToken}}">
             <table class="table">
               <thead>
                 <tr>
@@ -76,13 +76,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="receipt in sub.receipts">
-                  <td>{{receipt.receipt}}</td>
+                <tr ng-repeat="receipt in sub.receiptsList">
+                  <td>{{sub.receiptTokenMap[receipt.transactionId]}}</td>
                   <td>{{receipt.transactionId}}</td>
                   <td>{{receipt.purchaseDate}}</td>
                   <td><button class="refund-btn btn btn-danger" 
                       ng-class="{disabled: sub.subStatus == 'active' && receipt.cancellationDate}"
-                      ng-click="refundTransaction(sub.receipt, receipt.transactionId)">Refund</button></td>
+                      ng-click="refundTransaction(sub.receiptToken, receipt.transactionId)">Refund</button></td>
                 </tr>
               </tbody>
             </table>

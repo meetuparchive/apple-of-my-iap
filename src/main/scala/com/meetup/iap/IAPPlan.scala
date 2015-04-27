@@ -109,7 +109,7 @@ object IAPPlan extends Logging {
       val sortedSubs =
         Biller.subscriptions.values
           .toList
-          .sortBy(_.originalReceipt.purchaseDate.getTime)
+          .sortBy(_.originalReceiptInfo.purchaseDate.getTime)
           .reverse
 
       JsonContent ~> ResponseString(writePretty(sortedSubs))

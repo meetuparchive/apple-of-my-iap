@@ -42,7 +42,7 @@ object BillerCache extends Logging {
   }
 
   def writeToCache(subs: Map[String, Subscription]) {
-    val json = writePretty(subs)
-    FileUtils.writeStringToFile(TempFile, json, "UTF-8")
+      val json = writePretty(subs)
+      FileUtils.writeStringToFile(TempFile, json, "UTF-8")
   }
 }
