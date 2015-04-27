@@ -23,10 +23,8 @@ object AppleApi {
    * @param latestExpiredReceiptInfo Latest receipt charged in an expired subscription.
    */
   case class ReceiptResponse(
-    receipt: ReceiptInfo,
     latestReceipt: Option[String] = None,
-    latestReceiptInfo: Option[ReceiptInfo] = None,
-    latestExpiredReceiptInfo: Option[ReceiptInfo] = None,
+    latestReceiptInfo: List[ReceiptInfo],
     statusCode: Int = 0)
 
   case class ReceiptInfo(
@@ -34,9 +32,11 @@ object AppleApi {
     originalTransactionId: String,
     transactionId: String,
     purchaseDate: Date,
+    expiresDate: Date,
     productId: String,
-    receipt: Option[String] = None,
-    cancellationDate: Option[Date] = None )
+    isTrialPeriod: Boolean = false,
+    cancellationDate: Option[Date] = None,
+    quantity: Int = 1)
 
   def parseResponse(json: String): ReceiptResponse =
     read[ReceiptResponse](compact(render(parse(json).camelizeKeys)))
