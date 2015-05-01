@@ -16,7 +16,7 @@ object ReceiptRenderer {
   def apply(response: ReceiptResponse): String = {
     pretty(render(
       ("status" -> response.statusCode) ~
-        ("latest_receipt_info" -> response.latestReceiptInfo.map(renderReceipt)) ~
+        ("latest_receipt_info" -> response.latestReceiptInfo.reverse.map(renderReceipt)) ~
         ("latest_receipt" -> response.latestReceipt)))
   }
 
