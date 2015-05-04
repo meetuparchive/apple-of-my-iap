@@ -1,7 +1,7 @@
 package com.meetup.iap
 
 import com.meetup.db.adapter.OrgPlanAdapter
-import com.meetup.db.OrgSubscriptionQueries
+import com.meetup.db.OrgSubQueries
 import com.meetup.iap.receipt.{ReceiptGenerator, Subscription}
 import com.meetup.util.Logging
 
@@ -14,7 +14,7 @@ import java.util.Date
 object Biller extends Logging {
   lazy val plans: Map[Int, OrgPlanAdapter] = {
     log.info("Fetching plans...")
-    OrgSubscriptionQueries.getAllAppleOrgPlans.asScala
+    OrgSubQueries.getAllAppleOrgPlans
       .map(e => (e.getId.toInt, e))
       .toMap
   }
