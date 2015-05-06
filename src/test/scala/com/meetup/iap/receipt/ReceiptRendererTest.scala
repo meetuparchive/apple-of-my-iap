@@ -3,27 +3,39 @@ package com.meetup.iap.receipt
 import com.meetup.scalacheck.ScalaTestPropertySpec
 import com.meetup.iap.AppleApi
 import AppleApi.{ReceiptResponse, ReceiptInfo}
-import org.joda.time.DateTime
+import org.joda.time.{Period, DateTime}
 
 class ReceiptRendererTest extends ScalaTestPropertySpec {
 
   property("Renderer should produce valid dates") {
     val purchaseDate = new DateTime().withMillis(0).toDate
-    val originalPurchaseDate = purchaseDate
+    val expiresDate = new DateTime().withMillis(0).plus(Period.days(7)).toDate
+    val cancellationDate = new DateTime().withMillis(0).plus(Period.days(3)).toDate
 
-//    val receipt = ReceiptInfo(
-//        originalPurchaseDate,
-//        "orig_trans_1233",
-//        "trans_1234",
-//        purchaseDate,
-//        "product_123"
-//    )
-//
-//    val json = ReceiptRenderer(ReceiptResponse(receipt))
-//    val response = AppleApi.parseResponse(json)
-//
-//    response.receipt.purchaseDate should equal (purchaseDate)
-//    response.receipt.originalPurchaseDate should equal (originalPurchaseDate)
-    fail("Needs to be reimplemented.")
+    println(s"Orig purchaseDate: $purchaseDate, $expiresDate, $cancellationDate")
+
+    val transactionId = "10022345304"
+    val receiptInfo = ReceiptInfo(
+          purchaseDate,
+          transactionId,
+          transactionId,
+          purchaseDate,
+          expiresDate,
+          "123943451",
+          false,
+          Some(cancellationDate),
+          1)
+
+    val json = ReceiptRenderer(ReceiptResponse(None, List(receiptInfo)))
+    val response = AppleApi.parseResponse(json)
+
+    response.latestInfo.isDefined should equal (true)
+    response.latestInfo.map { info =>
+      info.purchaseDate should equal (purchaseDate)
+      info.expiresDate should equal (expiresDate)
+
+      info.cancellationDate.isDefined should equal (true)
+      info.cancellationDate.map(_ should equal (cancellationDate))
+    }
   }
 }

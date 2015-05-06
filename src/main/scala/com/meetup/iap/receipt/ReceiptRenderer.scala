@@ -35,7 +35,7 @@ object ReceiptRenderer {
     val expiresDateMs = gmtExpiresDate.getTime
 
     val cancellationDate = receiptInfo.cancellationDate.map { date =>
-      val gmt = asGmt(receiptInfo.purchaseDate)
+      val gmt = asGmt(date)
       TimeUtil.getFormattedDate(gmt, TimeUtil.timedateFormat)
     }
     ("quantity" -> "1") ~
