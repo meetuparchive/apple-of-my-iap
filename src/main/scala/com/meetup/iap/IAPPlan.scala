@@ -23,7 +23,7 @@ object IAPPlan {
   private def getOrBad[T](opt: Option[T]) = Directives.getOrElse(opt, BadRequest)
 
   private def getProductId(json: JValue) = {
-    val productId: Option[Int] =
+    val productId: Option[String] =
       json \ "productId" match {
         case JString(id) => Some(id)
         case _ => None

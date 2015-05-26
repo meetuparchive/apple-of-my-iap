@@ -95,7 +95,7 @@ angular.module('services', [])
       'getSubs': function() {
         return $http.get("/subs");
       },
-      'createSub': function(planId, statusCode) {
+      'createSub': function(productId, statusCode) {
         return $http.post("/subs", {"productId":productId, "status":statusCode});
       },
       'renewSub': function(receipt, statusCode) {

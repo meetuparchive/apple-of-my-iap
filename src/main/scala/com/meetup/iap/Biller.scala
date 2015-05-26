@@ -21,21 +21,11 @@ case class Plan(
     productId: String)
 
 object Biller extends Logging {
-  lazy val plans: Map[Int, OrgPlanAdapter] = {
-    log.info("Fetching plans...")
-    OrgSubQueries.getAllAppleOrgPlans
-      .map(e => (e.getId.toInt, e))
-      .toMap
-  }
 
   lazy val jsonPlans: List[Plan] = {
     log.info("Fetching NEW plans...")
     BillerCache.readPlansFromFile()
   }
-
-  lazy val plansByAppleRef: Map[String, OrgPlanAdapter] = plans.map { case (_,v) =>
-    (v.getOrgPlanApple.getAppleProductRef, v)
-  }.toMap
 
   lazy val plansByProductId: Map[String, Plan] = jsonPlans.map { p => p.productId -> p }.toMap
 
@@ -55,8 +45,8 @@ object Biller extends Logging {
   }
 
   def renewSub(sub: Subscription, status: Int = 0) {
-    plansByAppleRef.get(sub.latestReceiptInfo.productId).map { orgPlan =>
-      val (latestReceiptToken, latestReceiptInfo) = ReceiptGenerator(orgPlan, Right(sub))
+    plansByProductId.get(sub.latestReceiptInfo.productId).map { plan =>
+      val (latestReceiptToken, latestReceiptInfo) = ReceiptGenerator(plan, Right(sub))
       val updatedSub = sub.addReceipt(latestReceiptInfo, status, latestReceiptToken)
       _subscriptions.put(sub.receiptToken, updatedSub)
 	
@@ -88,7 +78,6 @@ object Biller extends Logging {
   def start() {
     log.info("Reading subs from cache.")
     BillerCache.readFromCache().foreach { case (k,v) => _subscriptions.put(k,v) }
-    plans
     jsonPlans
   }
 
