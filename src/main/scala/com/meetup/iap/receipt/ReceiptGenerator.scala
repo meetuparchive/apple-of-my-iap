@@ -1,6 +1,5 @@
 package com.meetup.iap.receipt
 
-import com.meetup.db.adapter.OrgPlanAdapter
 import com.meetup.iap.AppleApi
 import com.meetup.iap.Plan
 import AppleApi.{ReceiptResponse, ReceiptInfo}

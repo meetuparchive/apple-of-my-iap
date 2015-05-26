@@ -1,7 +1,5 @@
 package com.meetup.iap
 
-import com.meetup.db.adapter.OrgPlanAdapter
-import com.meetup.db.OrgSubQueries
 import com.meetup.iap.receipt.{ReceiptGenerator, Subscription}
 import com.meetup.util.Logging
 
@@ -9,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap
 import scala.collection.concurrent.{Map => CMap}
 import scala.collection.JavaConverters._
 import com.meetup.iap.AppleApi.ReceiptInfo
-import java.util.Date
 
 case class Plan(
     name: String,
