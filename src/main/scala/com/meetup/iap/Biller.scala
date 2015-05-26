@@ -1,7 +1,7 @@
 package com.meetup.iap
 
 import com.meetup.iap.receipt.{ReceiptGenerator, Subscription}
-import com.meetup.util.Logging
+import org.slf4j.LoggerFactory
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.concurrent.{Map => CMap}
@@ -17,8 +17,8 @@ case class Plan(
     trialIntervalUnit: String,
     productId: String)
 
-object Biller extends Logging {
-
+object Biller {
+  val log = LoggerFactory.getLogger(Biller.getClass)
   lazy val jsonPlans: List[Plan] = {
     log.info("Fetching NEW plans...")
     BillerCache.readPlansFromFile()
