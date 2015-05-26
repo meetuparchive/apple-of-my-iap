@@ -12,24 +12,24 @@ import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization.writePretty
 
 import scala.util.Try
-import com.meetup.util.Logging
 import scala.io.Source
 import com.meetup.iap.receipt.{ReceiptRenderer, ReceiptGenerator}
+import org.slf4j.LoggerFactory
 
-object IAPPlan extends Logging {
+object IAPPlan {
   implicit val formats = DefaultFormats
+  val log = LoggerFactory.getLogger(IAPPlan.getClass)
 
   private def getOrBad[T](opt: Option[T]) = Directives.getOrElse(opt, BadRequest)
 
-  private def getOrgPlanId(json: JValue) = {
-    val orgPlanId: Option[Int] =
-      json \ "orgPlanId" match {
-        case JString(id) => Try(id.toInt).toOption
-        case JInt(id) => Some(id.toInt)
+  private def getProductId(json: JValue) = {
+    val productId: Option[Int] =
+      json \ "productId" match {
+        case JString(id) => Some(id)
         case _ => None
     }
 
-    getOrBad(orgPlanId)
+    getOrBad(productId)
   }
 
   private def getIntFromString(code: String) = {
@@ -61,13 +61,13 @@ object IAPPlan extends Logging {
 
     case GET(Path("/plans")) => Directives.success {
         val json = pretty(render(
-          Biller.plans.values.map { plan =>
-            ("id" -> plan.getOrgPlanId.toInt) ~
-            ("name" -> plan.getName) ~
-            ("description" -> plan.getDescription)
+          Biller.jsonPlans.map { plan =>
+            ("productId" -> plan.productId) ~
+            ("name" -> plan.name) ~
+            ("description" -> plan.description)
         }))
 
-      log.info(s"Serving up ${Biller.plans.size} plans")
+      log.info(s"Serving up ${Biller.jsonPlans.size} plans")
       JsonContent ~> ResponseString(json)
     }
 
@@ -115,16 +115,16 @@ object IAPPlan extends Logging {
       JsonContent ~> ResponseString(writePretty(sortedSubs))
     }
 
-    // curl -d '{"orgPlanId":"", "status":""}' http://localhost:9090/receipts
+    // curl -d '{"productId":"", "status":""}' http://localhost:9090/receipts
     case req @ POST(Path("/subs")) =>
       for {
         json <- getOrBad(parseOpt(Body.string(req)))
-        orgPlanId <- getOrgPlanId(json)
-        orgPlan <- getOrBad(Biller.plans.get(orgPlanId))
+        productId <- getProductId(json)
+        plan <- getOrBad(Biller.plansByProductId.get(productId))
         status <- getStatusCode(json)
       } yield {
-        log.info(s"Creating receipt for plan '${orgPlan.getName}' with status: $status")
-        val sub = Biller.createSub(orgPlan, status)
+        log.info(s"Creating receipt for plan '${plan.name}' with status: $status")
+        val sub = Biller.createSub(plan, status)
         JsonContent ~> ResponseString(writePretty(sub))
       }
 

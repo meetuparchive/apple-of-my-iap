@@ -21,7 +21,7 @@ angular.module('app', ['services'])
       }
 
       $scope.createSub = function() {
-        Subs.createSub($scope.selectedPlan.id, $scope.selectedStatus.code).success(function(res) {
+        Subs.createSub($scope.selectedPlan.productId, $scope.selectedStatus.code).success(function(res) {
           loadSubs();
         });
       };
@@ -96,7 +96,7 @@ angular.module('services', [])
         return $http.get("/subs");
       },
       'createSub': function(planId, statusCode) {
-        return $http.post("/subs", {"orgPlanId":planId, "status":statusCode});
+        return $http.post("/subs", {"productId":productId, "status":statusCode});
       },
       'renewSub': function(receipt, statusCode) {
         return $http.post("/subs/" + receipt + "/renew/" + statusCode)

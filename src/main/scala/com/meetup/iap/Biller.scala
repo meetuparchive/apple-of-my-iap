@@ -11,6 +11,15 @@ import scala.collection.JavaConverters._
 import com.meetup.iap.AppleApi.ReceiptInfo
 import java.util.Date
 
+case class Plan(
+    name: String,
+    description: String,
+    billInterval: Int,
+    billIntervalUnit: String,
+    trialInterval: Int,
+    trialIntervalUnit: String,
+    productId: String)
+
 object Biller extends Logging {
   lazy val plans: Map[Int, OrgPlanAdapter] = {
     log.info("Fetching plans...")
@@ -19,18 +28,25 @@ object Biller extends Logging {
       .toMap
   }
 
+  lazy val jsonPlans: List[Plan] = {
+    log.info("Fetching NEW plans...")
+    BillerCache.readPlansFromFile()
+  }
+
   lazy val plansByAppleRef: Map[String, OrgPlanAdapter] = plans.map { case (_,v) =>
     (v.getOrgPlanApple.getAppleProductRef, v)
   }.toMap
+
+  lazy val plansByProductId: Map[String, Plan] = jsonPlans.map { p => p.productId -> p }.toMap
 
   private val _subscriptions: CMap[String, Subscription] =
     new ConcurrentHashMap[String, Subscription].asScala
 
   def subscriptions = _subscriptions.toMap
 
-  def createSub(orgPlan: OrgPlanAdapter, status: Int): Subscription = {
-    val receiptEncoding = ReceiptGenerator.genEncoding(orgPlan, subscriptions.keySet)
-    val (_, receiptInfo) = ReceiptGenerator(orgPlan, Left(receiptEncoding))
+  def createSub(plan: Plan, status: Int): Subscription = {
+    val receiptEncoding = ReceiptGenerator.genEncoding(plan, subscriptions.keySet)
+    val (_, receiptInfo) = ReceiptGenerator(plan, Left(receiptEncoding))
     val sub = Subscription(receiptEncoding, receiptInfo, status)
 
     _subscriptions.put(receiptEncoding, sub)
@@ -73,6 +89,7 @@ object Biller extends Logging {
     log.info("Reading subs from cache.")
     BillerCache.readFromCache().foreach { case (k,v) => _subscriptions.put(k,v) }
     plans
+    jsonPlans
   }
 
 //  LocalTimer.repeat(Period.seconds(10)) {

@@ -2,18 +2,19 @@ package com.meetup.iap.receipt
 
 import com.meetup.db.adapter.OrgPlanAdapter
 import com.meetup.iap.AppleApi
+import com.meetup.iap.Plan
 import AppleApi.{ReceiptResponse, ReceiptInfo}
 import org.joda.time.{DateTime, Period}
 
 object ReceiptGenerator {
 
-  def genEncoding(orgPlan: OrgPlanAdapter,
+  def genEncoding(plan: Plan,
                   existingEncodings: Set[String]): String = {
     def helper: String = {
       val id = java.util.UUID.randomUUID.toString.split("-")
       val id1 = id(0)
       val id2 = id(1)
-      val receipt = s"${orgPlan.getName}_$id1-$id2"
+      val receipt = s"${plan.name}_$id1-$id2"
 
       if(existingEncodings.contains(receipt)) helper
       else receipt
@@ -22,14 +23,14 @@ object ReceiptGenerator {
     helper
   }
 
-  def apply(orgPlan:OrgPlanAdapter,
+  def apply(plan: Plan,
             receiptOrSub: Either[String, Subscription] ): (String, ReceiptInfo) = {
 
     val purchaseDateTime = new DateTime()
     val purchaseDate = purchaseDateTime.toDate
-    val productId = orgPlan.getOrgPlanApple.getAppleProductRef
+    val productId = plan.productId
     val transactionId = s"$productId-$purchaseDateTime"
-    val expiresDate = calculateEndDate(purchaseDateTime, orgPlan.getBillInterval, orgPlan.getBillIntervalUnit).toDate
+    val expiresDate = calculateEndDate(purchaseDateTime, plan.billInterval, plan.billIntervalUnit).toDate
 
     val (origPurchaseDate, origTransId, receiptToken) = receiptOrSub match {
       case Left(receipt) =>
