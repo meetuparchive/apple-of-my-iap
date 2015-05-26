@@ -61,13 +61,13 @@ object IAPPlan {
 
     case GET(Path("/plans")) => Directives.success {
         val json = pretty(render(
-          Biller.jsonPlans.map { plan =>
+          Biller.plans.map { plan =>
             ("productId" -> plan.productId) ~
             ("name" -> plan.name) ~
             ("description" -> plan.description)
         }))
 
-      log.info(s"Serving up ${Biller.jsonPlans.size} plans")
+      log.info(s"Serving up ${Biller.plans.size} plans")
       JsonContent ~> ResponseString(json)
     }
 

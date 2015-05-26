@@ -19,12 +19,12 @@ case class Plan(
 
 object Biller {
   val log = LoggerFactory.getLogger(Biller.getClass)
-  lazy val jsonPlans: List[Plan] = {
+  lazy val plans: List[Plan] = {
     log.info("Fetching NEW plans...")
     BillerCache.readPlansFromFile()
   }
 
-  lazy val plansByProductId: Map[String, Plan] = jsonPlans.map { p => p.productId -> p }.toMap
+  lazy val plansByProductId: Map[String, Plan] = plans.map { p => p.productId -> p }.toMap
 
   private val _subscriptions: CMap[String, Subscription] =
     new ConcurrentHashMap[String, Subscription].asScala
@@ -75,7 +75,7 @@ object Biller {
   def start() {
     log.info("Reading subs from cache.")
     BillerCache.readFromCache().foreach { case (k,v) => _subscriptions.put(k,v) }
-    jsonPlans
+    plans
   }
 
 //  LocalTimer.repeat(Period.seconds(10)) {
