@@ -17,7 +17,7 @@ object ReceiptRenderer {
   val log = LoggerFactory.getLogger(ReceiptRenderer.getClass)
   val EasternTZ = "US/Eastern"
   val GMTTZ = "GMT"
-  val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+  def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   private def asGmt(date: Date): Date = translateTime(date, EasternTZ, GMTTZ)
 
