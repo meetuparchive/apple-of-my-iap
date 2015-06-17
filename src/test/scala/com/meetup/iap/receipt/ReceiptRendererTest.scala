@@ -1,11 +1,13 @@
 package com.meetup.iap.receipt
 
-import com.meetup.scalacheck.ScalaTestPropertySpec
 import com.meetup.iap.AppleApi
 import AppleApi.{ReceiptResponse, ReceiptInfo}
+
+import org.scalatest.{Matchers, PropSpec}
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.joda.time.{Period, DateTime}
 
-class ReceiptRendererTest extends ScalaTestPropertySpec {
+class ReceiptRendererTest extends PropSpec with GeneratorDrivenPropertyChecks with Matchers {
 
   property("Renderer should produce valid dates") {
     val purchaseDate = new DateTime().withMillis(0).toDate
