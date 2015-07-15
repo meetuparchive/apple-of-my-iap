@@ -15,6 +15,7 @@ import scala.util.Try
 import scala.io.Source
 import com.meetup.iap.receipt.{ReceiptRenderer, ReceiptGenerator}
 import org.slf4j.LoggerFactory
+import com.meetup.iap.AppleApi.ReceiptResponse
 
 object IAPPlan {
   implicit val formats = DefaultFormats
@@ -133,11 +134,16 @@ object IAPPlan {
       for {
         json <- getOrBad(parseOpt(Body.string(req)))
         receipt <- getReceiptData(json)
-        sub <- getOrBad(Biller.subscriptions.get(receipt))
       } yield {
-        log.info(s"attempting to verifyReceipt for $receipt")
-        val receiptResponse = ReceiptGenerator(sub)
-        JsonContent ~> ResponseString(ReceiptRenderer(receiptResponse))
+        val response = Biller.subscriptions.get(receipt).map { sub =>
+          log.info(s"attempting to verifyReceipt for $receipt")
+          ReceiptRenderer(ReceiptGenerator(sub))
+        }.getOrElse {
+          log.info(s"Failed ot find receipt: $receipt, returning BadReceipt.")
+          ReceiptRenderer(ReceiptResponse(statusCode = UnauthorizedReceipt.code))
+        }
+
+        JsonContent ~> ResponseString(response)
       }
   } }
 
