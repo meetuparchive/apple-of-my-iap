@@ -77,13 +77,22 @@ object IAPPlan {
       JsonContent ~> Ok
     }
 
-    // curl -d '' http://localhost:9090/receipts/abcd/renew/<statusCode>
-    case POST(Path(Seg("subs" :: receiptEncoded :: "renew" :: statusCode :: Nil))) =>
+    case req @ POST(Path(Seg("subs" :: receiptEncoded :: Nil))) =>
+      for {
+        json <- getOrBad(parseOpt(Body.string(req)))
+        status <- getStatusCode(json)
+        sub <- getOrBad(Biller.subscriptions.get(receiptEncoded))
+      } yield {
+        Biller.setSubStatus(sub, status)
+        JsonContent ~> Ok
+      }
+
+    // curl -d '' http://localhost:9090/receipts/abcd/renew
+    case POST(Path(Seg("subs" :: receiptEncoded :: "renew" :: Nil))) =>
       for {
         sub <- getOrBad(Biller.subscriptions.get(receiptEncoded))
-        code <- getIntFromString(statusCode)
       } yield {
-        Biller.renewSub(sub, code)
+        Biller.renewSub(sub)
         JsonContent ~> Ok
       }
 
@@ -122,10 +131,9 @@ object IAPPlan {
         json <- getOrBad(parseOpt(Body.string(req)))
         productId <- getProductId(json)
         plan <- getOrBad(Biller.plansByProductId.get(productId))
-        status <- getStatusCode(json)
       } yield {
-        log.info(s"Creating receipt for plan '${plan.name}' with status: $status")
-        val sub = Biller.createSub(plan, status)
+        log.info(s"Creating receipt for plan '${plan.name}'")
+        val sub = Biller.createSub(plan)
         JsonContent ~> ResponseString(writePretty(sub))
       }
 
