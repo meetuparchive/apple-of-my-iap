@@ -147,7 +147,7 @@ object IAPPlan {
           log.info(s"attempting to verifyReceipt for $receipt")
           ReceiptRenderer(ReceiptGenerator(sub))
         }.getOrElse {
-          log.info(s"Failed ot find receipt: $receipt, returning BadReceipt.")
+          log.info(s"Failed to find receipt: $receipt, returning BadReceipt.")
           ReceiptRenderer(ReceiptResponse(statusCode = UnauthorizedReceipt.code))
         }
 
