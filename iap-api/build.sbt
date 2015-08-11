@@ -1,5 +1,3 @@
-seq(Common.projectSettings:_*)
-
 description := "IAP API Interfaces"
 
 libraryDependencies ++=
