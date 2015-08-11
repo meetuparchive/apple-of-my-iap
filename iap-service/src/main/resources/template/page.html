@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-controller="controller">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apple IAP Mock Service</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
+  <link href="/css/iap-service.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="navbar-brand">IAP Apple Mock Service</span>
+      </div>
+      <div class="collapse navbar-collapse navbar-left form-inline">
+        <select class="form-control org-plan"
+          ng-model="selectedPlan"
+          ng-options="plan as plan.name for plan in plans">
+        </select>
+        <select class="form-control"
+          ng-model="selectedStatus"
+          ng-options="status as status.code + ': ' + status.name for status in statuses">
+        </select>
+        <button ng-click="createSub()" class="btn btn-primary navbar-btn">Create</button>
+      </div>
+      <div class="collapse navbar-collapse navbar-right form-inline">
+        <button class="btn btn-danger navbar-btn" data-toggle="modal" data-target=".clear-data-modal">Clear Data</button>
+      </div><!--/.nav-collapse -->
+    </div>
+  </nav>
+
+  <div class="container subscriptions">
+    <h2>Subscriptions</h2>
+    <div class="panel panel-default">
+      <div class="list-group">
+        <div class="list-group-item clearfix" ng-repeat="sub in subs">
+          <div class="pull-right">
+            <div class="form-inline">
+              <select ng-if="sub.subStatus=='active'" class="form-control"
+                      ng-init="selectedRenewStatus[sub.receiptToken] = statuses[0]"
+                      ng-model="selectedRenewStatus[sub.receiptToken]"
+                      ng-options="status as status.code + ': ' + status.name for status in statuses">
+              </select>
+              <button ng-if="sub.subStatus == 'active'" ng-click="renewSub(sub.receiptToken)" class="btn btn-success">Renew</button>
+              <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receiptToken)" class="btn btn-warning">Cancel</button>
+              <button class="btn btn-primary"
+                data-toggle="collapse"
+                data-target="#charges-{{sub.receiptToken}}">Charges
+                <span class="badge">{{sub.receiptsList.length}}</span>
+              </button>
+              <button class="btn btn-default"
+                ng-click="verifyResponse(sub.receiptToken)"
+                data-toggle="modal"
+                data-target="#response-modal">Response</button>
+
+            </div>
+          </div>
+          <h3 class="mono">{{sub.receiptToken}} <small>{{sub.receiptsList[0].originalPurchaseDate}}</small></h3>
+          <div class="panel panel-default collapse charges" id="charges-{{sub.receiptToken}}">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Receipt</th>
+                  <th>Transaction Id</th>
+                  <th>Purchase Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="receipt in sub.receiptsList">
+                  <td>{{sub.receiptTokenMap[receipt.transactionId]}}</td>
+                  <td>{{receipt.transactionId}}</td>
+                  <td>{{receipt.purchaseDate}}</td>
+                  <td><button class="refund-btn btn btn-danger" 
+                      ng-class="{disabled: sub.subStatus == 'active' && receipt.cancellationDate}"
+                      ng-click="refundTransaction(sub.receiptToken, receipt.transactionId)">Refund</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="response-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title mono">{{response.receipt}}</h4>
+        </div>
+        <div class="modal-body">
+          <pre>{{response.data}}</pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade clear-data-modal" id="clear-data-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Are you sure?</h4>
+        </div>
+        <div class="modal-body">
+          <p>This will remove all active/expired subscriptions and their receipt data from your json file cache.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+          <button type="button" class="btn btn-warning" ng-click="clearSubs()">Clear Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-resource.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-route.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+  <script src="/js/iap-service.js"></script>
+</body>
+</html>

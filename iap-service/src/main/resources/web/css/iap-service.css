@@ -1,0 +1,32 @@
+body {
+    padding-top: 50px;
+
+}
+
+body .mono {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+table tbody td {
+    font-family: 'Ubuntu Mono', monospace;
+}
+
+.org-plan.form-control {
+    width: 300px;
+    margin-right: 10px;
+}
+
+.container.subscriptions h3 {
+    margin-top: 4px;
+}
+
+.subscriptions .charges.panel {
+    clear: both;
+    margin-top: 20px;
+}
+
+.refund-btn {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
