@@ -31,20 +31,25 @@ object Biller {
 
   def subscriptions = _subscriptions.toMap
 
-  def createSub(plan: Plan, status: Int): Subscription = {
+  def createSub(plan: Plan): Subscription = {
     val receiptEncoding = ReceiptGenerator.genEncoding(plan, subscriptions.keySet)
     val (_, receiptInfo) = ReceiptGenerator(plan, Left(receiptEncoding))
-    val sub = Subscription(receiptEncoding, receiptInfo, status)
+    val sub = Subscription(receiptEncoding, receiptInfo)
 
     _subscriptions.put(receiptEncoding, sub)
     BillerCache.writeToCache(subscriptions)
     sub
   }
 
-  def renewSub(sub: Subscription, status: Int = 0) {
+  def setSubStatus(sub: Subscription, status: Int) {
+    _subscriptions.put(sub.receiptToken, sub.copy(status = status))
+    BillerCache.writeToCache(subscriptions)
+  }
+
+  def renewSub(sub: Subscription) {
     plansByProductId.get(sub.latestReceiptInfo.productId).map { plan =>
       val (latestReceiptToken, latestReceiptInfo) = ReceiptGenerator(plan, Right(sub))
-      val updatedSub = sub.addReceipt(latestReceiptInfo, status, latestReceiptToken)
+      val updatedSub = sub.addReceipt(latestReceiptInfo, latestReceiptToken)
       _subscriptions.put(sub.receiptToken, updatedSub)
 	
       BillerCache.writeToCache(subscriptions)

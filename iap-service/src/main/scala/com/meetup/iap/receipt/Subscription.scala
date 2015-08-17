@@ -1,6 +1,6 @@
 package com.meetup.iap.receipt
 
-import com.meetup.iap.AppleApi
+import com.meetup.iap.{ValidReceipt, AppleApi}
 import AppleApi.ReceiptInfo
 import java.util.Date
 
@@ -11,7 +11,7 @@ import java.util.Date
  * @param receipts
  */
 case class Subscription(
-    status: Int,
+    status: Int = ValidReceipt.code,
     receiptsList: List[ReceiptInfo],
     receiptToken: String,
     receiptTokenMap: Map[String, String], //receiptInfo -> receiptToken
@@ -23,10 +23,9 @@ case class Subscription(
   val latestReceiptInfo: ReceiptInfo = receiptsList.head
   val latestReceiptToken: Option[String] = receiptTokenMap.get(latestReceiptInfo.transactionId)
 
-  def addReceipt(receipt: ReceiptInfo, status: Int, newReceiptToken: String) =
+  def addReceipt(receipt: ReceiptInfo, newReceiptToken: String) =
     this.copy(
       receiptsList = receipt :: receiptsList,
-      status = status,
       receiptTokenMap = receiptTokenMap + (receipt.transactionId -> newReceiptToken)
     )
 
@@ -46,6 +45,6 @@ object Subscription {
     val Active = "active"
     val Cancelled = "cancelled"
   }
-  def apply(receiptToken: String, originalReceiptInfo: ReceiptInfo, status: Int) =
-    new Subscription(status, List(originalReceiptInfo), receiptToken, Map(originalReceiptInfo.transactionId -> receiptToken))
+  def apply(receiptToken: String, originalReceiptInfo: ReceiptInfo) =
+    new Subscription(ValidReceipt.code, List(originalReceiptInfo), receiptToken, Map(originalReceiptInfo.transactionId -> receiptToken))
 }

@@ -8,8 +8,14 @@ angular.module('app', ['services'])
         });
       }
 
+      $scope.setStatus = function(receipt) {
+        Subs.setStatus(receipt, $scope.selectedSubStatus[receipt].code).success(function() {
+          loadSubs();
+        });
+      }
+
       $scope.renewSub = function(receipt) {
-        Subs.renewSub(receipt, $scope.selectedRenewStatus[receipt].code).success(function() {
+        Subs.renewSub(receipt).success(function() {
           loadSubs();
         });
       };
@@ -21,15 +27,15 @@ angular.module('app', ['services'])
       }
 
       $scope.createSub = function() {
-        Subs.createSub($scope.selectedPlan.productId, $scope.selectedStatus.code).success(function(res) {
+        Subs.createSub($scope.selectedPlan.productId).success(function(res) {
           loadSubs();
         });
       };
 
       $scope.refundTransaction = function(receipt, transactionId) {
-      	Subs.refundTransaction(receipt, transactionId).success(function() {
-      	  loadSubs();
-      	});
+        Subs.refundTransaction(receipt, transactionId).success(function() {
+          loadSubs();
+        });
       };
 
       $scope.verifyResponse = function(receipt) {
@@ -56,21 +62,32 @@ angular.module('app', ['services'])
       Plans.getPlans().success(function(res) {
         $scope.plans = res;
         $scope.selectedPlan = $scope.plans[0];
-        $scope.statuses = [
-            {"code": "0"  , "name":"Valid Receipt"},
-            {"code": "21000", "name":"Bad Envelope"},
-            {"code": "21002", "name":"Bad Receipt"},
-            {"code": "21003", "name":"Unauthorized Receipt"},
-            {"code": "21004", "name":"Shared Secret Mismatch"},
-            {"code": "21005", "name":"Server Unavailable"},
-            {"code": "21006", "name":"SubscriptionExpired"},
-            {"code": "21007", "name":"Test To Production"},
-            {"code": "21008", "name":"Production To Test"}
-        ]; 
-        $scope.selectedStatus = $scope.statuses[0];
       });
 
-      $scope.selectedRenewStatus = {};
+      $scope.statuses = [
+        {"code": "0"  , "name":"Valid Receipt"},
+        {"code": "21000", "name":"Bad Envelope"},
+        {"code": "21002", "name":"Bad Receipt"},
+        {"code": "21003", "name":"Unauthorized Receipt"},
+        {"code": "21004", "name":"Shared Secret Mismatch"},
+        {"code": "21005", "name":"Server Unavailable"},
+        {"code": "21006", "name":"SubscriptionExpired"},
+        {"code": "21007", "name":"Test To Production"},
+        {"code": "21008", "name":"Production To Test"}
+      ];
+
+      $scope.statusByCode = (function(statuses){
+        var byCode = {};
+
+        for(i = 0; i < statuses.length; i++) {
+          var status = statuses[i];
+          byCode[status.code] = status;
+        }
+
+        return byCode;
+      })($scope.statuses)
+
+      $scope.selectedSubStatus = {};
 
       loadSubs()
     }]);
@@ -96,10 +113,10 @@ angular.module('services', [])
         return $http.get("/subs");
       },
       'createSub': function(productId, statusCode) {
-        return $http.post("/subs", {"productId":productId, "status":statusCode});
+        return $http.post("/subs", {"productId":productId});
       },
-      'renewSub': function(receipt, statusCode) {
-        return $http.post("/subs/" + receipt + "/renew/" + statusCode)
+      'renewSub': function(receipt) {
+        return $http.post("/subs/" + receipt + "/renew")
       },
       'cancelSub': function(receipt) {
         return $http.post("/subs/" + receipt + "/cancel")
@@ -109,6 +126,9 @@ angular.module('services', [])
       },
       'clearSubs': function() {
         return $http.post("/subs/clear");
+      },
+      'setStatus': function(receipt, statusCode) {
+      	return $http.post("/subs/" + receipt, {"status": statusCode});
       }
     }
   });

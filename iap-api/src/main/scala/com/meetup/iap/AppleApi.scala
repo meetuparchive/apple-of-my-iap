@@ -24,7 +24,7 @@ object AppleApi {
    */
   case class ReceiptResponse(
     latestReceipt: Option[String] = None,
-    latestReceiptInfo: List[ReceiptInfo],
+    latestReceiptInfo: List[ReceiptInfo] = List.empty,
     statusCode: Int = 0) {
     val latestInfo: Option[ReceiptInfo] = latestReceiptInfo.reverse.headOption
   }

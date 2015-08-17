@@ -27,10 +27,6 @@
           ng-model="selectedPlan"
           ng-options="plan as plan.name for plan in plans">
         </select>
-        <select class="form-control"
-          ng-model="selectedStatus"
-          ng-options="status as status.code + ': ' + status.name for status in statuses">
-        </select>
         <button ng-click="createSub()" class="btn btn-primary navbar-btn">Create</button>
       </div>
       <div class="collapse navbar-collapse navbar-right form-inline">
@@ -46,10 +42,11 @@
         <div class="list-group-item clearfix" ng-repeat="sub in subs">
           <div class="pull-right">
             <div class="form-inline">
-              <select ng-if="sub.subStatus=='active'" class="form-control"
-                      ng-init="selectedRenewStatus[sub.receiptToken] = statuses[0]"
-                      ng-model="selectedRenewStatus[sub.receiptToken]"
-                      ng-options="status as status.code + ': ' + status.name for status in statuses">
+              <select class="form-control"
+                ng-change="setStatus(sub.receiptToken)"
+                ng-model="selectedSubStatus[sub.receiptToken]"
+                ng-init="selectedSubStatus[sub.receiptToken] = statusByCode[sub.status]"
+                ng-options="status as status.code + ': ' + status.name for status in statuses track by status.code">
               </select>
               <button ng-if="sub.subStatus == 'active'" ng-click="renewSub(sub.receiptToken)" class="btn btn-success">Renew</button>
               <button ng-if="sub.subStatus == 'active'" ng-click="cancelSub(sub.receiptToken)" class="btn btn-warning">Cancel</button>
