@@ -3,8 +3,9 @@ Apple-of-My-IAP
 Apple-of-My-IAP is an open sourced tool and library to help developers integrate subscription based Apple In-App Purchases into their backend. 
 
 This project is made up of two separate sub-projects:
-    1. A mock service which simulates Apple's iTunes IAP service
-    2. A scala client for interacting with both the iTunes Sandbox/Production service or the mock service
+
+1. A mock service which simulates Apple's iTunes IAP service
+2. A scala client for interacting with both the iTunes Sandbox/Production service or the mock service
 
 Mock Service
 ------------
@@ -19,7 +20,7 @@ After you see the following message ```Embedded server running on port 9090. Pre
 
 You'll notice that there is a drop down menu to the right of the title "IAP Apple Mock Service" which appears to be empty. You'll also notice that the 'Create' button seems to do absolutely nothing. This is because we need to populate some plan data with which to create subscriptions. 
 
-You'll notice that after starting up the mock service for the first time, an empty file ```iap-service/tmp/plans.json``` is created. To create a plan, simple edit the contents of ```plans.json``` using the following structure:
+After starting up the mock service for the first time, an empty ```iap-service/tmp/plans.json``` file is created. To create a plan, simple edit the contents of ```plans.json``` using the following structure:
 
 ```
 [
@@ -44,12 +45,13 @@ You'll notice that after starting up the mock service for the first time, an emp
 ]
 ```
 
-Each item in the list corresponds to a possible plan with which to create a subscription. After you have populated ```plans.json````, simply restart the server to see the correct information populated. 
+Each item in the list corresponds to a possible plan with which to create a subscription. After you have populated ```plans.json```, simply restart the server to see the correct information populated. 
 
 Note: The mock service does not renew subscriptions automatically. Instead, hit the "Renew" button every time you want to renew a subscription.
 
 ###Mock Service Response
 To retrieve information about a specific subscription, make a post request to the ```/verifyReceipt``` endpoint with the subscriber's receipt token as one of the parameters.
+
 e.g. ```curl -d '{"receipt-data":"apple_ultd_cuba_1mo_4dde99c7-ff21"}' http://localhost:9090/verifyReceipt```
 
 The mock server will then return a response containing information about the item which was purchased, and the expiration date of said purchase. The following response shows the initial purchase and one successful renewal:
@@ -104,21 +106,30 @@ Scala Apple Client
 To get started, import the jar for the iap-api project into your project (not yet released). 
 
 Next, create an instance of the Client based on your needs:
+
+```
 val myITunesPwd = <your Itunes account password>
 val clientLogger = Logger.getLogger(Foo.class)
+```
 
 To interact with Apple's production IAP environment - 
+
 ```val client = Client.live(password = myITunesPwd, logger = clientLogger)```
 
 To interact with Apple's sandbox IAP environment - 
+
 ```val client = Client.sandbox(password = myItunesPwd, logger = clientLogger)```
 
 To interact with the mock IAP environment - 
+
 ```val client = Client.other(<http://url/to/mock/service>, logger = clientLogger)```
 
 You then make calls to the IAP environment by calling - 
+
 ```client.verifyReceipt(receipt, logResponse)``` 
+
 where ```receipt``` is the base64 encoded receipt string, and logResponse is a boolean indicating whether or not you want the IAP response logged or not. 
+
 ```verifyReceipt``` returns a Future[Either[IAPError, ReceiptResponse]. 
 
 
