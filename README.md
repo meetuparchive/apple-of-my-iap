@@ -7,6 +7,8 @@ This project is made up of two separate sub-projects:
 1. A mock service which simulates Apple's iTunes IAP service
 2. A scala client for interacting with both the iTunes Sandbox/Production service or the mock service
 
+To learn more about why this project exists, see this blog post: http://making.meetup.com/post/127718510507/apple-in-app-purchase-mock-service-fake-it-till
+
 Mock Service
 ------------
 The IAP mock service is a standalone web application built with Scala, AngularJS, Bootstrap, and the Unfiltered routing framework (http://unfiltered.databinder.net/Unfiltered.html). 
