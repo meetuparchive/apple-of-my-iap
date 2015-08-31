@@ -11,3 +11,11 @@ libraryDependencies ++=
     "net.databinder.dispatch" %% "dispatch-json4s-native" % "0.10.1",
     "com.ning" % "async-http-client" % "1.7.16",
     "org.slf4j" % "slf4j-log4j12" % "1.6.2")
+
+licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+
+organization := "com.meetup"
+
+version := "0.1"
+
+bintrayOrganization := Some("meetup")
