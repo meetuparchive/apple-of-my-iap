@@ -12,3 +12,11 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-log4j12" % "1.6.2",
   "org.scalatest" %% "scalatest" % "2.2.0" % "test",
   "org.scalacheck" %% "scalacheck" % "1.11.5" % "test" )
+
+licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+
+organization := "com.meetup"
+
+version := "0.1"
+
+bintrayOrganization := Some("meetup")
