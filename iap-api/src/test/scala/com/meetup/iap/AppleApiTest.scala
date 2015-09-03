@@ -1,11 +1,12 @@
 package com.meetup.iap
 
 import org.scalatest.{Matchers, PropSpec}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatest.prop.PropertyChecks
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
+import java.util.Date
 
-class AppleApiTest extends PropSpec with GeneratorDrivenPropertyChecks with Matchers {
+class AppleApiTest extends PropSpec with PropertyChecks with Matchers {
 
   property("Timezones on receipts are read accurately.") {
     val responseSingle = AppleApi.parseResponse(Receipts.Single)
@@ -28,7 +29,7 @@ class AppleApiTest extends PropSpec with GeneratorDrivenPropertyChecks with Matc
     }
   }
 
-  private def formatDateInGmt(date: String) =
+  private def formatDateInGmt(date: String): Date =
     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz").parse(s"$date GMT")
 
   private def getDateTime(date: String): DateTime =

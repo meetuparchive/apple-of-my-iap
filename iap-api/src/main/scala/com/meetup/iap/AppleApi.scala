@@ -1,6 +1,6 @@
 package com.meetup.iap
 
-import java.util.Date
+import java.util.{Date, TimeZone}
 
 import org.json4s.{DefaultFormats, JValue}
 import org.json4s.JsonAST.JInt
@@ -14,7 +14,11 @@ import java.text.SimpleDateFormat
 object AppleApi {
 
   implicit def formats = new DefaultFormats {
-    override def dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'Etc/GMT'")
+    override def dateFormatter = {
+      val format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'Etc/GMT'")
+      format.setTimeZone(TimeZone.getTimeZone("GMT"))
+      format
+    }
   }
 
   /**
