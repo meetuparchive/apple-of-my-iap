@@ -6,6 +6,9 @@ import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 
+import org.json4s._
+import org.json4s.native.JsonMethods._
+
 class AppleApiTest extends PropSpec with PropertyChecks with Matchers {
 
   property("Timezones on receipts are read accurately.") {
@@ -32,6 +35,12 @@ class AppleApiTest extends PropSpec with PropertyChecks with Matchers {
   property("isTrialPeriod on receipts should be parsed correctly even if JSON has a boolean string") {
     val withTrial = AppleApi.parseResponse(Receipts.SingleWithTrial)
     withTrial.latestInfo.map(_.isTrialPeriod) shouldBe Some(true)
+  }
+
+  property("isTrialPeriod on receipts should be parsed correctly from JValues") {
+    val jValues = parse(Receipts.SingleWithTrial)
+    val res = AppleApi.parseResponse(jValues)
+    res.right.map(_.latestInfo.map(_.isTrialPeriod)) shouldBe Right(Some(true))
   }
 
   private def formatDateInGmt(date: String): Date =
