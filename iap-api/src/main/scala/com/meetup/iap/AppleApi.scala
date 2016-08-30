@@ -75,10 +75,14 @@ object AppleApi {
 
   def parseResponse(json: String): ReceiptResponse = {
     val appleResponse = parseAppleResponse(json)
+    convertAppleReceiptResponse(appleResponse)
+  }
+
+  private def convertAppleReceiptResponse(appleReceiptResponse: AppleReceiptResponse): ReceiptResponse = {
     ReceiptResponse(
-      latestReceipt = appleResponse.latestReceipt,
-      latestReceiptInfo = appleResponse.latestReceiptInfo.map(convertAppleReceiptInfo),
-      statusCode = appleResponse.status
+      latestReceipt = appleReceiptResponse.latestReceipt,
+      latestReceiptInfo = appleReceiptResponse.latestReceiptInfo.map(convertAppleReceiptInfo),
+      statusCode = appleReceiptResponse.status
     )
   }
 
@@ -104,7 +108,9 @@ object AppleApi {
     j \ "status" match {
       case JInt(code) =>
         Status.get(code.toInt) match {
-          case ValidReceipt => Right(read[ReceiptResponse](compact(render(j.camelizeKeys))))
+          case ValidReceipt =>
+            val appleResponse = read[AppleReceiptResponse](compact(render(j.camelizeKeys)))
+            Right(convertAppleReceiptResponse(appleResponse))
           case s => Left(Right(s))
         }
       case _ => Left(Left("Invalid JSON"))
