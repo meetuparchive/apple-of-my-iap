@@ -33,6 +33,24 @@ object AppleApi {
     val latestInfo: Option[ReceiptInfo] = latestReceiptInfo.reverse.headOption
   }
 
+  /**
+    * Apple/iTunes doesn't follow the standard JSON specs and encodes some booleans and integers as Strings.
+    * Specifically, it encodes "is_trial_period":"true" and "quantity":"1".
+    *
+    * In order to be able to parse their JSON into case objects, but still retain our rich types, we
+    * maintain an internal model for deserializing Apple's JSON, then convert it to an external model
+    * for clients of the API to use. (internal models: AppleReceiptResponse, AppleReceiptInfo)
+    *
+    * @param latestReceipt Actual receipt info for the request receipt
+    * @param latestReceiptInfo Latest receipt charged in a subscription
+    * @param status status of the iTunes customer
+    */
+  private case class AppleReceiptResponse(
+    latestReceipt: Option[String],
+    latestReceiptInfo: List[AppleReceiptInfo],
+    status: Int)
+
+
   case class ReceiptInfo(
     originalPurchaseDate: Date,
     originalTransactionId: String,
@@ -40,12 +58,46 @@ object AppleApi {
     purchaseDate: Date,
     expiresDate: Date,
     productId: String,
-    isTrialPeriod: Boolean = false,
-    cancellationDate: Option[Date] = None,
-    quantity: Int = 1)
+    isTrialPeriod: Boolean,
+    cancellationDate: Option[Date],
+    quantity: Int)
 
-  def parseResponse(json: String): ReceiptResponse =
-    read[ReceiptResponse](compact(render(parse(json).camelizeKeys)))
+  private case class AppleReceiptInfo(
+    originalPurchaseDate: Date,
+    originalTransactionId: String,
+    transactionId: String,
+    purchaseDate: Date,
+    expiresDate: Date,
+    productId: String,
+    isTrialPeriod: String,
+    cancellationDate: Option[Date] = None,
+    quantity: String)
+
+  def parseResponse(json: String): ReceiptResponse = {
+    val appleResponse = parseAppleResponse(json)
+    ReceiptResponse(
+      latestReceipt = appleResponse.latestReceipt,
+      latestReceiptInfo = appleResponse.latestReceiptInfo.map(convertAppleReceiptInfo),
+      statusCode = appleResponse.status
+    )
+  }
+
+  private def convertAppleReceiptInfo(appleReceiptInfo: AppleReceiptInfo): ReceiptInfo = {
+    ReceiptInfo(
+      originalPurchaseDate = appleReceiptInfo.originalPurchaseDate,
+      originalTransactionId = appleReceiptInfo.originalTransactionId,
+      transactionId = appleReceiptInfo.transactionId,
+      purchaseDate = appleReceiptInfo.purchaseDate,
+      expiresDate = appleReceiptInfo.expiresDate,
+      productId = appleReceiptInfo.productId,
+      isTrialPeriod = appleReceiptInfo.isTrialPeriod.toBoolean, //we'll let this blow up if string value not convertable
+      cancellationDate = appleReceiptInfo.cancellationDate,
+      quantity = appleReceiptInfo.quantity.toInt
+    )
+  }
+
+  private def parseAppleResponse(json: String): AppleReceiptResponse =
+    read[AppleReceiptResponse](compact(render(parse(json).camelizeKeys)))
 
   /** Safely extract a receipt response from a parsed JSON structure. */
   def parseResponse(j: JValue): Either[Either[String, Status], ReceiptResponse] =
