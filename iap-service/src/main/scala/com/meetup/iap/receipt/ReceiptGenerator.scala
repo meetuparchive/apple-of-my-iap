@@ -47,7 +47,10 @@ object ReceiptGenerator {
                     transactionId,
                     purchaseDate,
                     expiresDate,
-                    productId))
+                    productId,
+                    cancellationDate = None,
+                    isTrialPeriod = false,
+                    quantity = 1))
   }
 
   def apply(sub: Subscription): ReceiptResponse = {
