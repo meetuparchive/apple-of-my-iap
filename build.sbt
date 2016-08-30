@@ -1,6 +1,6 @@
 lazy val commonSettings = Seq(
   organization := "com.meetup",
-  version := "0.3",
+  version := "0.4",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalaVersion := "2.11.7",
   libraryDependencies ++= Seq(
