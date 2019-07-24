@@ -59,6 +59,7 @@ object AppleApi {
     expiresDate: Date,
     productId: String,
     isTrialPeriod: Boolean,
+    isInIntroOfferPeriod: Option[Boolean],
     cancellationDate: Option[Date],
     quantity: Int)
 
@@ -70,6 +71,7 @@ object AppleApi {
     expiresDate: Date,
     productId: String,
     isTrialPeriod: String,
+    isInIntroOfferPeriod: Option[String] = None,
     cancellationDate: Option[Date] = None,
     quantity: String)
 
@@ -95,6 +97,7 @@ object AppleApi {
       expiresDate = appleReceiptInfo.expiresDate,
       productId = appleReceiptInfo.productId,
       isTrialPeriod = appleReceiptInfo.isTrialPeriod.toBoolean, //we'll let this blow up if string value not convertable
+      isInIntroOfferPeriod = appleReceiptInfo.isInIntroOfferPeriod.map(_.toBoolean),
       cancellationDate = appleReceiptInfo.cancellationDate,
       quantity = appleReceiptInfo.quantity.toInt
     )

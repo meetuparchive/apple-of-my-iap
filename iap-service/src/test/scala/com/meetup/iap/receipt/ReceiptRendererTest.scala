@@ -24,7 +24,8 @@ class ReceiptRendererTest extends PropSpec with GeneratorDrivenPropertyChecks wi
           purchaseDate,
           expiresDate,
           "123943451",
-          false,
+          isTrialPeriod = false,
+          isInIntroOfferPeriod = None,
           Some(cancellationDate),
           1)
 

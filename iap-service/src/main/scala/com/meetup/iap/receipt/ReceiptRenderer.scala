@@ -55,6 +55,7 @@ object ReceiptRenderer {
       ("expires_date" -> expiresDateStr) ~
       ("expires_date_ms" -> expiresDateMs.toString) ~
       ("is_trial_period" -> receiptInfo.isTrialPeriod.toString) ~ //We mimic Apple's weird json here by converting the boolean type to a string
+      ("is_in_intro_offer_period" -> receiptInfo.isInIntroOfferPeriod.map(_.toString)) ~
       ("cancellation_date" -> cancellationDate)
   }
 }
