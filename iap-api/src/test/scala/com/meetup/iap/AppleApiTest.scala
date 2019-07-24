@@ -43,6 +43,16 @@ class AppleApiTest extends PropSpec with PropertyChecks with Matchers {
     res.right.map(_.latestInfo.map(_.isTrialPeriod)) shouldBe Right(Some(true))
   }
 
+  property("isInIntroOfferPeriod on receipts should be parsed correctly event if field is not exist") {
+    val single = AppleApi.parseResponse(Receipts.Single)
+    single.latestInfo.flatMap(_.isInIntroOfferPeriod) shouldBe None
+  }
+
+  property("isInIntroOfferPeriod on receipts should be parsed correctly even if JSON has a boolean string") {
+    val withInIntoOfferFlag = AppleApi.parseResponse(Receipts.SingleWithInIntoOfferFlag)
+    withInIntoOfferFlag.latestInfo.flatMap(_.isInIntroOfferPeriod) shouldBe Some(true)
+  }
+
   private def formatDateInGmt(date: String): Date =
     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz").parse(s"$date GMT")
 
@@ -144,5 +154,28 @@ object Receipts {
     ],
     "latest_receipt": "apple_45_seconds_plan_cc9c330e-3b26-002"
     }
+  """
+
+  val SingleWithInIntoOfferFlag = s"""
+  {
+    "status": 0,
+    "latest_receipt_info": [
+      {
+        "quantity": "1",
+        "product_id": "$ProductId",
+        "transaction_id": "$ProductId-2015-05-06T10:43:34.135-04:00",
+        "original_transaction_id": "$ProductId-2015-05-06T10:43:34.135-04:00",
+        "purchase_date": "$PurchaseDate Etc/GMT",
+        "purchase_date_ms": "1430937814135",
+        "original_purchase_date": "2015-05-06 14:43:34 Etc/GMT",
+        "original_purchase_date_ms": "1430937814135",
+        "expires_date": "$ExpiresDate Etc/GMT",
+        "expires_date_ms": "1430937859135",
+        "is_trial_period": "false",
+        "is_in_intro_offer_period": "true"
+      }
+    ],
+    "latest_receipt": "apple_45_seconds_plan_cc9c330e-3b26"
+  }
   """
 }

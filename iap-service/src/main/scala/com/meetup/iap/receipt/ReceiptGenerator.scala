@@ -50,6 +50,7 @@ object ReceiptGenerator {
                     productId,
                     cancellationDate = None,
                     isTrialPeriod = false,
+                    isInIntroOfferPeriod = None,
                     quantity = 1))
   }
 
