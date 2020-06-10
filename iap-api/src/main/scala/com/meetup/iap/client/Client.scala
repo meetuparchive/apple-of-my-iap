@@ -29,7 +29,7 @@ final class Client private (rb: Req, http: Http = Http, password: Option[String]
   val base = rb / IAP.VerifyReceipt
   def verifyReceipt(receipt: String, logResponse: Boolean = false): Future[Either[Either[String, Status], ReceiptResponse]] = {
     val receiptDataParam = s""" "receipt-data" : "$receipt" """
-    val jsonParams = password.fold(receiptDataParam)(pwd => s""" $receiptDataParam, "password" : "$pwd" """)
+    val jsonParams = password.fold(receiptDataParam)(pwd => s""" $receiptDataParam, "password" : "$pwd", "exclude-old-transactions": true """)
     val req = (base << s"""{ $jsonParams }""")
       .setHeader("Content-Type", "application/json; charset=UTF-8")
     http(req OK Json).map{ res =>
