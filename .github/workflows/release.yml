@@ -14,4 +14,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Release to bintray
         run: |
+          sbt publish
           sbt bintrayRelease
