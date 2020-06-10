@@ -1,5 +1,7 @@
-Apple-of-My-IAP
-===============
+# Apple-of-My-IAP
+
+![build](https://github.com/meetup/apple-of-my-iap/workflows/build/badge.svg)
+
 Apple-of-My-IAP is an open sourced tool and library to help developers integrate subscription based Apple In-App Purchases into their backend. 
 
 This project is made up of two separate sub-projects:
