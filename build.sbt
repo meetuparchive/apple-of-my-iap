@@ -9,6 +9,9 @@ lazy val commonSettings = Seq(
   )
 )
 
+bintrayOrganization := Some("meetup")
+bintrayRepository := "maven"
+
 lazy val `apple-of-my-iap` = (project in file("."))
   .settings(commonSettings: _*)
   .settings(
