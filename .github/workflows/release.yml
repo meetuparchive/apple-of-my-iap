@@ -2,6 +2,8 @@ name: release
 
 on:
   push:
+    tags:
+      - '*'
 
 env:
   BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
