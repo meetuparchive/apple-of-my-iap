@@ -1,12 +1,12 @@
 package com.meetup.iap
 
+import java.text.SimpleDateFormat
 import java.util.{Date, TimeZone}
 
-import org.json4s.{DefaultFormats, JValue}
 import org.json4s.JsonAST.JInt
 import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization.read
-import java.text.SimpleDateFormat
+import org.json4s.{DefaultFormats, JValue}
 
 /**
  * Handles requests to apple's verify services and parsing of response.
@@ -30,7 +30,7 @@ object AppleApi {
     latestReceipt: Option[String] = None,
     latestReceiptInfo: List[ReceiptInfo] = List.empty,
     statusCode: Int = 0) {
-    val latestInfo: Option[ReceiptInfo] = latestReceiptInfo.reverse.headOption
+    val latestInfo: Option[ReceiptInfo] = latestReceiptInfo.sortBy(_.purchaseDate).lastOption
   }
 
   /**
