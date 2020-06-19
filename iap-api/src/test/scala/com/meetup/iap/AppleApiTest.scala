@@ -1,13 +1,13 @@
 package com.meetup.iap
 
-import org.scalatest.{Matchers, PropSpec}
-import org.scalatest.prop.PropertyChecks
-import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 
+import org.joda.time.DateTime
 import org.json4s._
 import org.json4s.native.JsonMethods._
+import org.scalatest.prop.PropertyChecks
+import org.scalatest.{Matchers, PropSpec}
 
 class AppleApiTest extends PropSpec with PropertyChecks with Matchers {
 
@@ -128,19 +128,6 @@ object Receipts {
       {
         "quantity": "1",
         "product_id": "$ProductId",
-        "transaction_id": "$ProductId-2015-05-06T11:49:29.701-04:00",
-        "original_transaction_id": "$ProductId-2015-05-06T10:43:34.135-04:00",
-        "purchase_date": "2015-05-06 15:49:29 Etc/GMT",
-        "purchase_date_ms": "1430941769701",
-        "original_purchase_date": "2015-05-06 14:43:34 Etc/GMT",
-        "original_purchase_date_ms": "1430937814135",
-        "expires_date": "2015-05-06 15:50:14 Etc/GMT",
-        "expires_date_ms": "1430941814701",
-        "is_trial_period": "false"
-      },
-      {
-        "quantity": "1",
-        "product_id": "$ProductId",
         "transaction_id": "$ProductId-2015-05-06T11:49:31.786-04:00",
         "original_transaction_id": "$ProductId-2015-05-06T10:43:34.135-04:00",
         "purchase_date": "$PurchaseDate Etc/GMT",
@@ -149,6 +136,19 @@ object Receipts {
         "original_purchase_date_ms": "1430937814135",
         "expires_date": "$ExpiresDate Etc/GMT",
         "expires_date_ms": "1430941816786",
+        "is_trial_period": "false"
+      },
+      {
+        "quantity": "1",
+        "product_id": "$ProductId",
+        "transaction_id": "$ProductId-2015-05-06T11:49:29.701-04:00",
+        "original_transaction_id": "$ProductId-2015-05-06T10:43:34.135-04:00",
+        "purchase_date": "2015-05-06 15:49:29 Etc/GMT",
+        "purchase_date_ms": "1430941769701",
+        "original_purchase_date": "2015-05-06 14:43:34 Etc/GMT",
+        "original_purchase_date_ms": "1430937814135",
+        "expires_date": "2015-05-06 15:50:14 Etc/GMT",
+        "expires_date_ms": "1430941814701",
         "is_trial_period": "false"
       }
     ],
