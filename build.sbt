@@ -6,11 +6,13 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "2.2.0" % "test",
     "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
-  )
+  ),
+  resolvers += Resolver.githubPackages("meetup", "meetup")
 )
 
-bintrayOrganization := Some("meetup")
-bintrayRepository := "maven"
+ThisBuild / githubOwner := "meetup"
+ThisBuild / githubRepository := "meetup"
+ThisBuild / githubTokenSource := TokenSource.Environment("GITHUB_TOKEN")
 
 lazy val `apple-of-my-iap` = (project in file("."))
   .settings(commonSettings: _*)

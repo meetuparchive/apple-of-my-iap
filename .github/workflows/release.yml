@@ -3,11 +3,7 @@ name: release
 on:
   push:
     tags:
-      - '*'
-
-env:
-  BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-  BINTRAY_PASS: ${{ secrets.BINTRAY_PASS }}
+      - "*"
 
 jobs:
   releasse:
@@ -21,4 +17,5 @@ jobs:
       - name: Release to bintray
         run: |
           sbt publish
-          sbt bintrayRelease
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_GITHUB_TOKEN }}
